@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use RuntimeException;
 
 class ProductController extends Controller
 {
@@ -20,8 +21,8 @@ class ProductController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -76,6 +77,9 @@ class ProductController extends Controller
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('products', 'public');
+            if ($imagePath === false) {
+                throw new RuntimeException('Failed to store product image.');
+            }
         }
 
         Product::create([
@@ -136,7 +140,7 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'sku' => ['required', 'string', 'max:100', 'unique:products,sku,' . $product->id],
+            'sku' => ['required', 'string', 'max:100', 'unique:products,sku,'.$product->id],
             'category_id' => ['nullable', 'exists:categories,id'],
             'supplier_id' => ['nullable', 'exists:suppliers,id'],
             'description' => ['nullable', 'string'],
@@ -151,7 +155,11 @@ class ProductController extends Controller
             if ($product->image_path && Storage::disk('public')->exists($product->image_path)) {
                 Storage::disk('public')->delete($product->image_path);
             }
-            $product->image_path = $request->file('image')->store('products', 'public');
+            $imagePath = $request->file('image')->store('products', 'public');
+            if ($imagePath === false) {
+                throw new RuntimeException('Failed to store product image.');
+            }
+            $product->image_path = $imagePath;
         }
 
         $product->update([
@@ -180,4 +188,3 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }
 }
-

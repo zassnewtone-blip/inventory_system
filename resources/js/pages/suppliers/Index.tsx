@@ -1,5 +1,15 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { Edit, Mail, Phone, Plus, RotateCcw, Search, Trash2, Truck, X } from 'lucide-react';
+import {
+    Edit,
+    Mail,
+    Phone,
+    Plus,
+    RotateCcw,
+    Search,
+    Trash2,
+    Truck,
+    X,
+} from 'lucide-react';
 import { useState } from 'react';
 import AppLayout from '../../layouts/AppLayout';
 import { type PaginatedData, type Supplier } from '../../types';
@@ -14,16 +24,19 @@ interface Props {
 export default function SuppliersIndex({ suppliers, filters }: Props) {
     const [search, setSearch] = useState(filters.search || '');
     const [modalOpen, setModalOpen] = useState(false);
-    const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
+    const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(
+        null,
+    );
 
-    const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
-        name: '',
-        contact_person: '',
-        phone: '',
-        email: '',
-        address: '',
-        is_active: true,
-    });
+    const { data, setData, post, put, processing, errors, reset, clearErrors } =
+        useForm({
+            name: '',
+            contact_person: '',
+            phone: '',
+            email: '',
+            address: '',
+            is_active: true,
+        });
 
     const openAddModal = () => {
         setEditingSupplier(null);
@@ -74,7 +87,11 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get('/suppliers', { search: search || undefined }, { preserveState: true });
+        router.get(
+            '/suppliers',
+            { search: search || undefined },
+            { preserveState: true },
+        );
     };
 
     const handleReset = () => {
@@ -83,7 +100,9 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
     };
 
     const confirmDelete = (sup: Supplier) => {
-        if (confirm(`Are you sure you want to delete supplier "${sup.name}"?`)) {
+        if (
+            confirm(`Are you sure you want to delete supplier "${sup.name}"?`)
+        ) {
             router.delete(`/suppliers/${sup.id}`);
         }
     };
@@ -95,8 +114,12 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
             {/* Header */}
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-bold text-slate-800">Suppliers Directory</h1>
-                    <p className="text-xs text-slate-500">Manage vendors, contact persons, and supply sources</p>
+                    <h1 className="text-xl font-bold text-slate-800">
+                        Suppliers Directory
+                    </h1>
+                    <p className="text-xs text-slate-500">
+                        Manage vendors, contact persons, and supply sources
+                    </p>
                 </div>
                 <button
                     onClick={openAddModal}
@@ -109,15 +132,21 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
 
             {/* Search Bar */}
             <div className="mb-6 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs">
-                <form onSubmit={handleSearch} className="flex max-w-md items-center gap-2">
+                <form
+                    onSubmit={handleSearch}
+                    className="flex max-w-md items-center gap-2"
+                >
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                        <Search
+                            className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
+                            size={16}
+                        />
                         <input
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search name, email, phone, contact..."
-                            className="w-full rounded-xl border border-slate-200 py-2 pl-9 pr-3 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                            className="w-full rounded-xl border border-slate-200 py-2 pr-3 pl-9 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                         />
                     </div>
                     <button
@@ -144,66 +173,104 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
                     <table className="w-full text-left text-xs">
                         <thead className="border-b border-slate-100 bg-slate-50/75 text-slate-500">
                             <tr>
-                                <th className="py-3 px-4 font-semibold">Supplier</th>
-                                <th className="py-3 px-4 font-semibold">Contact Person</th>
-                                <th className="py-3 px-4 font-semibold">Phone & Email</th>
-                                <th className="py-3 px-4 font-semibold">Supplied Items</th>
-                                <th className="py-3 px-4 font-semibold">Status</th>
-                                <th className="py-3 px-4 text-right font-semibold">Actions</th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Supplier
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Contact Person
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Phone & Email
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Supplied Items
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Status
+                                </th>
+                                <th className="px-4 py-3 text-right font-semibold">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 text-slate-700">
                             {suppliers.data.map((supplier) => (
-                                <tr key={supplier.id} className="hover:bg-slate-50/60">
-                                    <td className="py-3 px-4">
+                                <tr
+                                    key={supplier.id}
+                                    className="hover:bg-slate-50/60"
+                                >
+                                    <td className="px-4 py-3">
                                         <div className="flex items-center gap-2.5">
                                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
                                                 <Truck size={16} />
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-slate-900">{supplier.name}</p>
-                                                <p className="text-[11px] text-slate-400 truncate max-w-xs">{supplier.address || 'No address'}</p>
+                                                <p className="font-semibold text-slate-900">
+                                                    {supplier.name}
+                                                </p>
+                                                <p className="max-w-xs truncate text-[11px] text-slate-400">
+                                                    {supplier.address ||
+                                                        'No address'}
+                                                </p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="py-3 px-4 text-slate-600">
-                                        {supplier.contact_person || <span className="italic text-slate-400">N/A</span>}
+                                    <td className="px-4 py-3 text-slate-600">
+                                        {supplier.contact_person || (
+                                            <span className="text-slate-400 italic">
+                                                N/A
+                                            </span>
+                                        )}
                                     </td>
-                                    <td className="py-3 px-4">
+                                    <td className="px-4 py-3">
                                         <div className="space-y-0.5">
                                             {supplier.phone && (
                                                 <p className="flex items-center gap-1 text-slate-600">
-                                                    <Phone size={11} className="text-slate-400" />
-                                                    <span>{supplier.phone}</span>
+                                                    <Phone
+                                                        size={11}
+                                                        className="text-slate-400"
+                                                    />
+                                                    <span>
+                                                        {supplier.phone}
+                                                    </span>
                                                 </p>
                                             )}
                                             {supplier.email && (
                                                 <p className="flex items-center gap-1 text-slate-600">
-                                                    <Mail size={11} className="text-slate-400" />
-                                                    <span>{supplier.email}</span>
+                                                    <Mail
+                                                        size={11}
+                                                        className="text-slate-400"
+                                                    />
+                                                    <span>
+                                                        {supplier.email}
+                                                    </span>
                                                 </p>
                                             )}
                                         </div>
                                     </td>
-                                    <td className="py-3 px-4 font-bold text-slate-800">
+                                    <td className="px-4 py-3 font-bold text-slate-800">
                                         {supplier.products_count ?? 0} items
                                     </td>
-                                    <td className="py-3 px-4">
+                                    <td className="px-4 py-3">
                                         <span
-                                            className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                                            className={`rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase ${
                                                 supplier.is_active
                                                     ? 'bg-emerald-100 text-emerald-800'
                                                     : 'bg-slate-100 text-slate-600'
                                             }`}
                                         >
-                                            {supplier.is_active ? 'Active' : 'Inactive'}
+                                            {supplier.is_active
+                                                ? 'Active'
+                                                : 'Inactive'}
                                         </span>
                                     </td>
-                                    <td className="py-3 px-4 text-right">
+                                    <td className="px-4 py-3 text-right">
                                         <div className="flex items-center justify-end gap-1.5">
                                             <button
                                                 type="button"
-                                                onClick={() => openEditModal(supplier)}
+                                                onClick={() =>
+                                                    openEditModal(supplier)
+                                                }
                                                 className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-indigo-600"
                                                 title="Edit"
                                             >
@@ -211,7 +278,9 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => confirmDelete(supplier)}
+                                                onClick={() =>
+                                                    confirmDelete(supplier)
+                                                }
                                                 className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600"
                                                 title="Delete"
                                             >
@@ -226,9 +295,16 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
 
                     {suppliers.data.length === 0 && (
                         <div className="py-12 text-center text-slate-400">
-                            <Truck size={32} className="mx-auto text-slate-300" />
-                            <p className="mt-2 text-sm font-semibold text-slate-600">No suppliers found</p>
-                            <p className="text-xs text-slate-400">Add suppliers to track purchase origins.</p>
+                            <Truck
+                                size={32}
+                                className="mx-auto text-slate-300"
+                            />
+                            <p className="mt-2 text-sm font-semibold text-slate-600">
+                                No suppliers found
+                            </p>
+                            <p className="text-xs text-slate-400">
+                                Add suppliers to track purchase origins.
+                            </p>
                         </div>
                     )}
                 </div>
@@ -236,20 +312,32 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
                 {/* Pagination */}
                 {suppliers.last_page > 1 && (
                     <div className="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-xs text-slate-500">
-                        <span>Showing {suppliers.from || 0} to {suppliers.to || 0} of {suppliers.total} entries</span>
+                        <span>
+                            Showing {suppliers.from || 0} to {suppliers.to || 0}{' '}
+                            of {suppliers.total} entries
+                        </span>
                         <div className="flex gap-1">
                             {suppliers.links.map((link, idx) => (
                                 <button
                                     key={idx}
                                     disabled={!link.url}
-                                    onClick={() => link.url && router.get(link.url, {}, { preserveState: true })}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                    onClick={() =>
+                                        link.url &&
+                                        router.get(
+                                            link.url,
+                                            {},
+                                            { preserveState: true },
+                                        )
+                                    }
+                                    dangerouslySetInnerHTML={{
+                                        __html: link.label,
+                                    }}
                                     className={`rounded-lg px-2.5 py-1 font-medium transition ${
                                         link.active
                                             ? 'bg-indigo-600 text-white'
                                             : link.url
-                                            ? 'text-slate-600 hover:bg-slate-100'
-                                            : 'cursor-not-allowed text-slate-300'
+                                              ? 'text-slate-600 hover:bg-slate-100'
+                                              : 'cursor-not-allowed text-slate-300'
                                     }`}
                                 />
                             ))}
@@ -264,7 +352,9 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
                     <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
                         <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3">
                             <h3 className="text-base font-bold text-slate-800">
-                                {editingSupplier ? 'Edit Supplier' : 'Add New Supplier'}
+                                {editingSupplier
+                                    ? 'Edit Supplier'
+                                    : 'Add New Supplier'}
                             </h3>
                             <button
                                 onClick={closeModal}
@@ -277,17 +367,24 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
                         <form onSubmit={submit} className="space-y-4">
                             <div>
                                 <label className="mb-1 block text-xs font-semibold text-slate-700">
-                                    Supplier / Company Name <span className="text-rose-500">*</span>
+                                    Supplier / Company Name{' '}
+                                    <span className="text-rose-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     required
                                     value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('name', e.target.value)
+                                    }
                                     placeholder="e.g., Global Tech Supplies Inc."
-                                    className="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                                    className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                                 />
-                                {errors.name && <p className="mt-1 text-xs text-rose-600">{errors.name}</p>}
+                                {errors.name && (
+                                    <p className="mt-1 text-xs text-rose-600">
+                                        {errors.name}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -298,11 +395,20 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
                                     <input
                                         type="text"
                                         value={data.contact_person}
-                                        onChange={(e) => setData('contact_person', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'contact_person',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="e.g., Jane Smith"
-                                        className="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                                        className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                                     />
-                                    {errors.contact_person && <p className="mt-1 text-xs text-rose-600">{errors.contact_person}</p>}
+                                    {errors.contact_person && (
+                                        <p className="mt-1 text-xs text-rose-600">
+                                            {errors.contact_person}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div>
@@ -312,11 +418,17 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
                                     <input
                                         type="text"
                                         value={data.phone}
-                                        onChange={(e) => setData('phone', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('phone', e.target.value)
+                                        }
                                         placeholder="e.g., +63 912 345 6789"
-                                        className="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                                        className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                                     />
-                                    {errors.phone && <p className="mt-1 text-xs text-rose-600">{errors.phone}</p>}
+                                    {errors.phone && (
+                                        <p className="mt-1 text-xs text-rose-600">
+                                            {errors.phone}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
@@ -327,11 +439,17 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
                                 <input
                                     type="email"
                                     value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('email', e.target.value)
+                                    }
                                     placeholder="orders@supplier.com"
-                                    className="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                                    className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                                 />
-                                {errors.email && <p className="mt-1 text-xs text-rose-600">{errors.email}</p>}
+                                {errors.email && (
+                                    <p className="mt-1 text-xs text-rose-600">
+                                        {errors.email}
+                                    </p>
+                                )}
                             </div>
 
                             <div>
@@ -341,11 +459,17 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
                                 <textarea
                                     rows={2}
                                     value={data.address}
-                                    onChange={(e) => setData('address', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('address', e.target.value)
+                                    }
                                     placeholder="Warehouse or office address..."
-                                    className="w-full rounded-xl border border-slate-200 py-2.5 px-3 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                                    className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                                 />
-                                {errors.address && <p className="mt-1 text-xs text-rose-600">{errors.address}</p>}
+                                {errors.address && (
+                                    <p className="mt-1 text-xs text-rose-600">
+                                        {errors.address}
+                                    </p>
+                                )}
                             </div>
 
                             <div>
@@ -353,7 +477,12 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
                                     <input
                                         type="checkbox"
                                         checked={data.is_active}
-                                        onChange={(e) => setData('is_active', e.target.checked)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'is_active',
+                                                e.target.checked,
+                                            )
+                                        }
                                         className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                                     />
                                     <span>Active Status</span>
@@ -373,7 +502,11 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
                                     disabled={processing}
                                     className="rounded-xl bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-sm shadow-indigo-600/20 hover:bg-indigo-700 disabled:opacity-60"
                                 >
-                                    {processing ? 'Saving...' : editingSupplier ? 'Update' : 'Create'}
+                                    {processing
+                                        ? 'Saving...'
+                                        : editingSupplier
+                                          ? 'Update'
+                                          : 'Create'}
                                 </button>
                             </div>
                         </form>
@@ -383,4 +516,3 @@ export default function SuppliersIndex({ suppliers, filters }: Props) {
         </AppLayout>
     );
 }
-

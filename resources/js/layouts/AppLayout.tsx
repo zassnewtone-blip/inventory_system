@@ -5,7 +5,6 @@ import {
     ChevronLeft,
     ChevronRight,
     ClipboardList,
-    Layers,
     LayoutDashboard,
     LogOut,
     Menu,
@@ -43,18 +42,27 @@ const navItems: NavItem[] = [
     { label: 'Suppliers', href: '/suppliers', icon: Truck },
     { label: 'Stock In', href: '/inventory/stock-in', icon: PackagePlus },
     { label: 'Stock Out', href: '/inventory/stock-out', icon: PackageMinus },
-    { label: 'Adjustment', href: '/inventory/adjustment', icon: Sliders, adminOnly: true },
+    {
+        label: 'Adjustment',
+        href: '/inventory/adjustment',
+        icon: Sliders,
+        adminOnly: true,
+    },
     { label: 'Transactions', href: '/transactions', icon: ClipboardList },
     { label: 'Inventory Report', href: '/reports/inventory', icon: BarChart3 },
-    { label: 'Stock Movement', href: '/reports/stock-movement', icon: BarChart3 },
+    {
+        label: 'Stock Movement',
+        href: '/reports/stock-movement',
+        icon: BarChart3,
+    },
     { label: 'Low Stock Report', href: '/reports/low-stock', icon: BarChart3 },
     { label: 'User Management', href: '/users', icon: Users, adminOnly: true },
 ];
 
 export default function AppLayout({ children, title }: Props) {
-    const page = usePage<SharedProps>() || {} as SharedProps;
-    // Provide defaults so the component works even if the server hasn't sent `auth` yet
-    const { auth = {}, flash = {}, url = '' } = page;
+    const page = usePage<SharedProps>();
+    const { auth, flash } = page.props;
+    const { url } = page;
     const user = auth.user ?? { name: 'Guest', role: 'staff' };
 
     const [collapsed, setCollapsed] = useState(false);
@@ -82,7 +90,9 @@ export default function AppLayout({ children, title }: Props) {
         return url.startsWith(path);
     };
 
-    const filteredNav = navItems.filter((item) => !item.adminOnly || user?.role === 'admin');
+    const filteredNav = navItems.filter(
+        (item) => !item.adminOnly || user?.role === 'admin',
+    );
 
     return (
         <div className="flex h-screen overflow-hidden bg-slate-50 font-sans text-slate-800">
@@ -110,8 +120,12 @@ export default function AppLayout({ children, title }: Props) {
                         </div>
                         {!collapsed && (
                             <div>
-                                <h1 className="text-base font-bold tracking-tight text-white">InvenTrack</h1>
-                                <p className="text-[11px] font-medium text-slate-400">Inventory System</p>
+                                <h1 className="text-base font-bold tracking-tight text-white">
+                                    InvenTrack
+                                </h1>
+                                <p className="text-[11px] font-medium text-slate-400">
+                                    Inventory System
+                                </p>
                             </div>
                         )}
                     </div>
@@ -119,9 +133,15 @@ export default function AppLayout({ children, title }: Props) {
                     <button
                         onClick={() => setCollapsed(!collapsed)}
                         className="hidden rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white lg:block"
-                        title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+                        title={
+                            collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'
+                        }
                     >
-                        {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+                        {collapsed ? (
+                            <ChevronRight size={18} />
+                        ) : (
+                            <ChevronLeft size={18} />
+                        )}
                     </button>
 
                     <button
@@ -157,17 +177,24 @@ export default function AppLayout({ children, title }: Props) {
 
                 {/* User Info & Logout */}
                 <div className="border-t border-slate-800 p-3">
-                    <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'} gap-2 rounded-lg bg-slate-800/60 p-2.5`}>
+                    <div
+                        className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'} gap-2 rounded-lg bg-slate-800/60 p-2.5`}
+                    >
                         <div className="flex items-center gap-2.5 overflow-hidden">
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-700 text-slate-200">
                                 <UserIcon size={18} />
                             </div>
                             {!collapsed && (
                                 <div className="truncate">
-                                    <p className="truncate text-xs font-semibold text-white">{user?.name || 'User'}</p>
+                                    <p className="truncate text-xs font-semibold text-white">
+                                        {user?.name || 'User'}
+                                    </p>
                                     <div className="flex items-center gap-1">
-                                        <Shield size={10} className="text-indigo-400" />
-                                        <span className="text-[10px] font-medium tracking-wider uppercase text-indigo-400">
+                                        <Shield
+                                            size={10}
+                                            className="text-indigo-400"
+                                        />
+                                        <span className="text-[10px] font-medium tracking-wider text-indigo-400 uppercase">
                                             {user?.role || 'staff'}
                                         </span>
                                     </div>
@@ -199,19 +226,27 @@ export default function AppLayout({ children, title }: Props) {
                         >
                             <Menu size={22} />
                         </button>
-                        {title && <h2 className="text-lg font-bold text-slate-800">{title}</h2>}
+                        {title && (
+                            <h2 className="text-lg font-bold text-slate-800">
+                                {title}
+                            </h2>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-3">
                         <div className="hidden text-right sm:block">
-                            <p className="text-xs font-semibold text-slate-800">{user?.name}</p>
-                            <p className="text-[11px] capitalize text-slate-500">{user?.role} Account</p>
+                            <p className="text-xs font-semibold text-slate-800">
+                                {user?.name}
+                            </p>
+                            <p className="text-[11px] text-slate-500 capitalize">
+                                {user?.role} Account
+                            </p>
                         </div>
                         <span
                             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
                                 user?.role === 'admin'
-                                    ? 'bg-indigo-100 text-indigo-700 border border-indigo-200'
-                                    : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                                    ? 'border border-indigo-200 bg-indigo-100 text-indigo-700'
+                                    : 'border border-emerald-200 bg-emerald-100 text-emerald-700'
                             }`}
                         >
                             {user?.role}
@@ -239,9 +274,10 @@ export default function AppLayout({ children, title }: Props) {
                 )}
 
                 {/* Page Content */}
-                <main className="flex-1 overflow-y-auto p-4 lg:p-8">{children}</main>
+                <main className="flex-1 overflow-y-auto p-4 lg:p-8">
+                    {children}
+                </main>
             </div>
         </div>
     );
 }
-

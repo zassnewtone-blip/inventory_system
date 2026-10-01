@@ -43,7 +43,7 @@ class InventoryController extends Controller
         ]);
 
         DB::transaction(function () use ($validated, $request) {
-            $product = Product::lockForUpdate()->findOrFail($validated['product_id']);
+            $product = Product::lockForUpdate()->findOrFail((int) $validated['product_id']);
 
             $previousStock = $product->current_stock;
             $quantity = (int) $validated['quantity'];
@@ -66,7 +66,7 @@ class InventoryController extends Controller
                 'unit_cost' => $unitCost,
                 'total_cost' => $totalCost,
                 'supplier_id' => $validated['supplier_id'] ?: null,
-                'reference_number' => $validated['reference_number'] ?: ('IN-' . strtoupper(uniqid())),
+                'reference_number' => $validated['reference_number'] ?: ('IN-'.strtoupper(uniqid())),
                 'notes' => $validated['notes'] ?? null,
             ]);
         });
@@ -96,7 +96,7 @@ class InventoryController extends Controller
         ]);
 
         DB::transaction(function () use ($validated, $request) {
-            $product = Product::lockForUpdate()->findOrFail($validated['product_id']);
+            $product = Product::lockForUpdate()->findOrFail((int) $validated['product_id']);
 
             $quantity = (int) $validated['quantity'];
             if ($quantity > $product->current_stock) {
@@ -119,7 +119,7 @@ class InventoryController extends Controller
                 'quantity' => $quantity,
                 'previous_stock' => $previousStock,
                 'new_stock' => $newStock,
-                'reference_number' => $validated['reference_number'] ?: ('OUT-' . strtoupper(uniqid())),
+                'reference_number' => $validated['reference_number'] ?: ('OUT-'.strtoupper(uniqid())),
                 'reason' => $validated['reason'],
                 'notes' => $validated['notes'] ?? null,
             ]);
@@ -148,7 +148,7 @@ class InventoryController extends Controller
         ]);
 
         DB::transaction(function () use ($validated, $request) {
-            $product = Product::lockForUpdate()->findOrFail($validated['product_id']);
+            $product = Product::lockForUpdate()->findOrFail((int) $validated['product_id']);
 
             $previousStock = $product->current_stock;
             $adjustedStock = (int) $validated['adjusted_quantity'];
@@ -174,7 +174,7 @@ class InventoryController extends Controller
                 'quantity' => abs($difference),
                 'previous_stock' => $previousStock,
                 'new_stock' => $adjustedStock,
-                'reference_number' => 'ADJ-' . strtoupper(uniqid()),
+                'reference_number' => 'ADJ-'.strtoupper(uniqid()),
                 'reason' => $validated['reason'],
             ]);
         });
@@ -182,4 +182,3 @@ class InventoryController extends Controller
         return back()->with('success', 'Stock adjustment successfully saved.');
     }
 }
-

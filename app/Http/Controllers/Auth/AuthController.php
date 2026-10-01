@@ -23,15 +23,16 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()->withErrors([
                 'email' => 'The provided credentials do not match our records.',
             ])->onlyInput('email');
         }
 
         $user = Auth::user();
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             Auth::logout();
+
             return back()->withErrors([
                 'email' => 'Your account has been deactivated. Please contact an administrator.',
             ])->onlyInput('email');
@@ -52,4 +53,3 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 }
-

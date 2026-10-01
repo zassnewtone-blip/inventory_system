@@ -7,7 +7,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -20,7 +19,7 @@ class UserController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -72,7 +71,7 @@ class UserController extends Controller
             'is_active' => $validated['is_active'] ?? true,
         ];
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $updateData['password'] = Hash::make($validated['password']);
         }
 
@@ -81,4 +80,3 @@ class UserController extends Controller
         return back()->with('success', 'User account updated successfully.');
     }
 }
-

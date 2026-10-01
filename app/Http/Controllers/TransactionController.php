@@ -25,12 +25,12 @@ class TransactionController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('reference_number', 'like', "%{$search}%")
-                  ->orWhere('reason', 'like', "%{$search}%")
-                  ->orWhere('notes', 'like', "%{$search}%")
-                  ->orWhereHas('product', function ($pq) use ($search) {
-                      $pq->where('name', 'like', "%{$search}%")
-                         ->orWhere('sku', 'like', "%{$search}%");
-                  });
+                    ->orWhere('reason', 'like', "%{$search}%")
+                    ->orWhere('notes', 'like', "%{$search}%")
+                    ->orWhereHas('product', function ($pq) use ($search) {
+                        $pq->where('name', 'like', "%{$search}%")
+                            ->orWhere('sku', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -74,4 +74,3 @@ class TransactionController extends Controller
         ]);
     }
 }
-

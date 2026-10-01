@@ -2,12 +2,10 @@ import { Head, Link } from '@inertiajs/react';
 import {
     AlertOctagon,
     AlertTriangle,
-    ArrowRight,
     CheckCircle2,
     Download,
     PackagePlus,
     Printer,
-    ShieldAlert,
 } from 'lucide-react';
 import AppLayout from '../../layouts/AppLayout';
 
@@ -30,7 +28,7 @@ interface Props {
 export default function LowStock({ products }: Props) {
     const outOfStockCount = products.filter((p) => p.current_stock <= 0).length;
     const lowStockCount = products.filter(
-        (p) => p.current_stock > 0 && p.current_stock <= p.minimum_stock
+        (p) => p.current_stock > 0 && p.current_stock <= p.minimum_stock,
     ).length;
 
     const exportToCSV = () => {
@@ -70,7 +68,7 @@ export default function LowStock({ products }: Props) {
         link.setAttribute('href', encodedUri);
         link.setAttribute(
             'download',
-            `low_stock_restock_report_${new Date().toISOString().split('T')[0]}.csv`
+            `low_stock_restock_report_${new Date().toISOString().split('T')[0]}.csv`,
         );
         document.body.appendChild(link);
         link.click();
@@ -85,23 +83,26 @@ export default function LowStock({ products }: Props) {
                 {/* Header */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-xl font-bold text-slate-800">Low & Depleted Stock Monitor</h1>
+                        <h1 className="text-xl font-bold text-slate-800">
+                            Low & Depleted Stock Monitor
+                        </h1>
                         <p className="text-xs text-slate-500">
-                            Actionable inventory list for replenishment and purchase order generation
+                            Actionable inventory list for replenishment and
+                            purchase order generation
                         </p>
                     </div>
 
                     <div className="flex items-center gap-2">
                         <button
                             onClick={exportToCSV}
-                            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-xs hover:bg-slate-50 hover:text-emerald-700 transition"
+                            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 hover:text-emerald-700"
                         >
                             <Download size={14} className="text-emerald-600" />
                             <span>Export Replenishment List</span>
                         </button>
                         <button
                             onClick={() => window.print()}
-                            className="flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-slate-800 transition"
+                            className="flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-slate-800"
                         >
                             <Printer size={14} />
                             <span>Print</span>
@@ -116,14 +117,16 @@ export default function LowStock({ products }: Props) {
                             <AlertOctagon size={24} />
                         </div>
                         <div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-rose-700">
+                            <span className="text-xs font-bold tracking-wider text-rose-700 uppercase">
                                 Critical: Out of Stock
                             </span>
                             <p className="text-2xl font-extrabold text-rose-900">
-                                {outOfStockCount} {outOfStockCount === 1 ? 'Product' : 'Products'}
+                                {outOfStockCount}{' '}
+                                {outOfStockCount === 1 ? 'Product' : 'Products'}
                             </p>
                             <p className="text-xs text-rose-600">
-                                Zero available stock. Cannot fulfill incoming customer orders.
+                                Zero available stock. Cannot fulfill incoming
+                                customer orders.
                             </p>
                         </div>
                     </div>
@@ -133,14 +136,16 @@ export default function LowStock({ products }: Props) {
                             <AlertTriangle size={24} />
                         </div>
                         <div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-amber-700">
+                            <span className="text-xs font-bold tracking-wider text-amber-700 uppercase">
                                 Warning: Low Stock Threshold
                             </span>
                             <p className="text-2xl font-extrabold text-amber-900">
-                                {lowStockCount} {lowStockCount === 1 ? 'Product' : 'Products'}
+                                {lowStockCount}{' '}
+                                {lowStockCount === 1 ? 'Product' : 'Products'}
                             </p>
                             <p className="text-xs text-amber-600">
-                                Available inventory is at or below recommended reorder point.
+                                Available inventory is at or below recommended
+                                reorder point.
                             </p>
                         </div>
                     </div>
@@ -150,44 +155,72 @@ export default function LowStock({ products }: Props) {
                 <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-xs">
-                            <thead className="border-b border-slate-200 bg-slate-50/80 font-bold uppercase tracking-wider text-slate-500">
+                            <thead className="border-b border-slate-200 bg-slate-50/80 font-bold tracking-wider text-slate-500 uppercase">
                                 <tr>
-                                    <th className="py-3 px-4">Product / SKU</th>
-                                    <th className="py-3 px-4">Category</th>
-                                    <th className="py-3 px-4">Supplier</th>
-                                    <th className="py-3 px-4 text-right">In Stock</th>
-                                    <th className="py-3 px-4 text-right">Min Reorder</th>
-                                    <th className="py-3 px-4 text-right">Replenish Deficit</th>
-                                    <th className="py-3 px-4 text-center">Condition</th>
-                                    <th className="py-3 px-4 text-center">Action</th>
+                                    <th className="px-4 py-3">Product / SKU</th>
+                                    <th className="px-4 py-3">Category</th>
+                                    <th className="px-4 py-3">Supplier</th>
+                                    <th className="px-4 py-3 text-right">
+                                        In Stock
+                                    </th>
+                                    <th className="px-4 py-3 text-right">
+                                        Min Reorder
+                                    </th>
+                                    <th className="px-4 py-3 text-right">
+                                        Replenish Deficit
+                                    </th>
+                                    <th className="px-4 py-3 text-center">
+                                        Condition
+                                    </th>
+                                    <th className="px-4 py-3 text-center">
+                                        Action
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                                 {products.map((p) => {
-                                    const deficit = Math.max(0, p.minimum_stock - p.current_stock);
+                                    const deficit = Math.max(
+                                        0,
+                                        p.minimum_stock - p.current_stock,
+                                    );
                                     const isOut = p.current_stock <= 0;
                                     return (
-                                        <tr key={p.id} className="transition hover:bg-slate-50/60">
-                                            <td className="py-3 px-4">
-                                                <p className="font-bold text-slate-900">{p.name}</p>
+                                        <tr
+                                            key={p.id}
+                                            className="transition hover:bg-slate-50/60"
+                                        >
+                                            <td className="px-4 py-3">
+                                                <p className="font-bold text-slate-900">
+                                                    {p.name}
+                                                </p>
                                                 <span className="font-mono text-[10px] text-slate-400">
                                                     {p.sku}
                                                 </span>
                                             </td>
-                                            <td className="py-3 px-4 text-slate-600">{p.category}</td>
-                                            <td className="py-3 px-4 text-slate-500">{p.supplier}</td>
-                                            <td className="py-3 px-4 text-right font-extrabold whitespace-nowrap">
-                                                <span className={isOut ? 'text-rose-600' : 'text-amber-600'}>
+                                            <td className="px-4 py-3 text-slate-600">
+                                                {p.category}
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-500">
+                                                {p.supplier}
+                                            </td>
+                                            <td className="px-4 py-3 text-right font-extrabold whitespace-nowrap">
+                                                <span
+                                                    className={
+                                                        isOut
+                                                            ? 'text-rose-600'
+                                                            : 'text-amber-600'
+                                                    }
+                                                >
                                                     {p.current_stock} {p.unit}
                                                 </span>
                                             </td>
-                                            <td className="py-3 px-4 text-right text-slate-500 whitespace-nowrap">
+                                            <td className="px-4 py-3 text-right whitespace-nowrap text-slate-500">
                                                 {p.minimum_stock} {p.unit}
                                             </td>
-                                            <td className="py-3 px-4 text-right font-bold text-rose-600 whitespace-nowrap">
+                                            <td className="px-4 py-3 text-right font-bold whitespace-nowrap text-rose-600">
                                                 +{deficit} {p.unit} needed
                                             </td>
-                                            <td className="py-3 px-4 text-center whitespace-nowrap">
+                                            <td className="px-4 py-3 text-center whitespace-nowrap">
                                                 {isOut ? (
                                                     <span className="inline-flex rounded-full bg-rose-100 px-2.5 py-0.5 text-[10px] font-bold text-rose-800">
                                                         OUT OF STOCK
@@ -198,10 +231,10 @@ export default function LowStock({ products }: Props) {
                                                     </span>
                                                 )}
                                             </td>
-                                            <td className="py-3 px-4 text-center whitespace-nowrap">
+                                            <td className="px-4 py-3 text-center whitespace-nowrap">
                                                 <Link
                                                     href="/inventory/stock-in"
-                                                    className="inline-flex items-center gap-1 rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition"
+                                                    className="inline-flex items-center gap-1 rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
                                                 >
                                                     <PackagePlus size={14} />
                                                     <span>Restock</span>
@@ -216,12 +249,16 @@ export default function LowStock({ products }: Props) {
 
                     {products.length === 0 && (
                         <div className="py-12 text-center text-slate-400">
-                            <CheckCircle2 size={36} className="mx-auto text-emerald-500" />
+                            <CheckCircle2
+                                size={36}
+                                className="mx-auto text-emerald-500"
+                            />
                             <p className="mt-2 text-sm font-semibold text-slate-800">
                                 Inventory is well stocked!
                             </p>
                             <p className="text-xs text-slate-400">
-                                No products are currently below their minimum safety stock levels.
+                                No products are currently below their minimum
+                                safety stock levels.
                             </p>
                         </div>
                     )}
@@ -230,4 +267,3 @@ export default function LowStock({ products }: Props) {
         </AppLayout>
     );
 }
-

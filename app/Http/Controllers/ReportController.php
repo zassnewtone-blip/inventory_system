@@ -18,7 +18,7 @@ class ReportController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%");
+                    ->orWhere('sku', 'like', "%{$search}%");
             });
         }
 
@@ -70,24 +70,24 @@ class ReportController extends Controller
         $products = Product::with(['transactions' => function ($q) use ($startDate, $endDate) {
             $q->whereBetween('created_at', [$startDate, $endDate]);
         }])
-        ->orderBy('name')
-        ->get()
-        ->map(function ($p) {
-            $stockIn = $p->transactions->where('transaction_type', 'STOCK_IN')->sum('quantity');
-            $stockOut = $p->transactions->where('transaction_type', 'STOCK_OUT')->sum('quantity');
-            $adjustments = $p->transactions->where('transaction_type', 'ADJUSTMENT')->count();
+            ->orderBy('name')
+            ->get()
+            ->map(function ($p) {
+                $stockIn = $p->transactions->where('transaction_type', 'STOCK_IN')->sum('quantity');
+                $stockOut = $p->transactions->where('transaction_type', 'STOCK_OUT')->sum('quantity');
+                $adjustments = $p->transactions->where('transaction_type', 'ADJUSTMENT')->count();
 
-            return [
-                'id' => $p->id,
-                'name' => $p->name,
-                'sku' => $p->sku,
-                'unit' => $p->unit,
-                'stock_in' => $stockIn,
-                'stock_out' => $stockOut,
-                'adjustments' => $adjustments,
-                'current_stock' => $p->current_stock,
-            ];
-        });
+                return [
+                    'id' => $p->id,
+                    'name' => $p->name,
+                    'sku' => $p->sku,
+                    'unit' => $p->unit,
+                    'stock_in' => $stockIn,
+                    'stock_out' => $stockOut,
+                    'adjustments' => $adjustments,
+                    'current_stock' => $p->current_stock,
+                ];
+            });
 
         return Inertia::render('reports/StockMovement', [
             'products' => $products,
@@ -124,4 +124,3 @@ class ReportController extends Controller
         ]);
     }
 }
-

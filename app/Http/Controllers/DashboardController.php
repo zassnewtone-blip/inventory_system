@@ -30,7 +30,7 @@ class DashboardController extends Controller
 
         $totalInventoryValue = (float) Product::where('status', 'active')
             ->selectRaw('SUM(current_stock * unit_price) as total_val')
-            ->value('total_val') ?? 0;
+            ->value('total_val');
 
         $thirtyDaysAgo = Carbon::now()->subDays(30)->startOfDay();
 
@@ -115,4 +115,3 @@ class DashboardController extends Controller
         ]);
     }
 }
-

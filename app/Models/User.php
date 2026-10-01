@@ -58,11 +58,13 @@ class User extends Authenticatable
         return $this->role === 'staff';
     }
 
+    /** @return HasMany<InventoryTransaction, $this> */
     public function transactions(): HasMany
     {
         return $this->hasMany(InventoryTransaction::class);
     }
 
+    /** @return HasMany<StockAdjustment, $this> */
     public function adjustments(): HasMany
     {
         return $this->hasMany(StockAdjustment::class);

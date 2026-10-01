@@ -16,7 +16,7 @@ class CategoryController extends Controller
 
         if ($search = $request->input('search')) {
             $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                ->orWhere('description', 'like', "%{$search}%");
         }
 
         $categories = $query->orderBy('name', 'asc')
@@ -49,7 +49,7 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:categories,name,' . $category->id],
+            'name' => ['required', 'string', 'max:255', 'unique:categories,name,'.$category->id],
             'description' => ['nullable', 'string'],
             'is_active' => ['boolean'],
         ]);
@@ -74,4 +74,3 @@ class CategoryController extends Controller
         return back()->with('success', 'Category deleted successfully.');
     }
 }
-

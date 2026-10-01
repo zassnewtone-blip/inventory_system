@@ -11,7 +11,12 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import AppLayout from '../../layouts/AppLayout';
-import { type Category, type PaginatedData, type Product, type Supplier } from '../../types';
+import {
+    type Category,
+    type PaginatedData,
+    type Product,
+    type Supplier,
+} from '../../types';
 
 interface Props {
     products: PaginatedData<Product>;
@@ -25,12 +30,16 @@ interface Props {
     };
 }
 
-export default function ProductsIndex({ products, categories, suppliers, filters }: Props) {
+export default function ProductsIndex({
+    products,
+    categories,
+    suppliers,
+    filters,
+}: Props) {
     const [search, setSearch] = useState(filters.search || '');
     const [categoryId, setCategoryId] = useState(filters.category_id || '');
     const [supplierId, setSupplierId] = useState(filters.supplier_id || '');
     const [status, setStatus] = useState(filters.status || '');
-    const [deleteId, setDeleteId] = useState<number | null>(null);
 
     const handleFilter = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -42,7 +51,7 @@ export default function ProductsIndex({ products, categories, suppliers, filters
                 supplier_id: supplierId || undefined,
                 status: status || undefined,
             },
-            { preserveState: true }
+            { preserveState: true },
         );
     };
 
@@ -55,7 +64,11 @@ export default function ProductsIndex({ products, categories, suppliers, filters
     };
 
     const confirmDelete = (product: Product) => {
-        if (confirm(`Are you sure you want to delete product "${product.name}"? This action cannot be undone.`)) {
+        if (
+            confirm(
+                `Are you sure you want to delete product "${product.name}"? This action cannot be undone.`,
+            )
+        ) {
             router.delete(`/products/${product.id}`);
         }
     };
@@ -89,9 +102,12 @@ export default function ProductsIndex({ products, categories, suppliers, filters
             {/* Header with Title and Add Product */}
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-bold text-slate-800">Products Catalog</h1>
+                    <h1 className="text-xl font-bold text-slate-800">
+                        Products Catalog
+                    </h1>
                     <p className="text-xs text-slate-500">
-                        Total {products.total} products registered in the inventory database
+                        Total {products.total} products registered in the
+                        inventory database
                     </p>
                 </div>
                 <Link
@@ -105,16 +121,22 @@ export default function ProductsIndex({ products, categories, suppliers, filters
 
             {/* Search and Filters Bar */}
             <div className="mb-6 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs">
-                <form onSubmit={handleFilter} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                <form
+                    onSubmit={handleFilter}
+                    className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5"
+                >
                     {/* Search Input */}
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                        <Search
+                            className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
+                            size={16}
+                        />
                         <input
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search name, SKU..."
-                            className="w-full rounded-xl border border-slate-200 py-2 pl-9 pr-3 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                            className="w-full rounded-xl border border-slate-200 py-2 pr-3 pl-9 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                         />
                     </div>
 
@@ -123,7 +145,7 @@ export default function ProductsIndex({ products, categories, suppliers, filters
                         <select
                             value={categoryId}
                             onChange={(e) => setCategoryId(e.target.value)}
-                            className="w-full rounded-xl border border-slate-200 py-2 px-3 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                         >
                             <option value="">All Categories</option>
                             {categories.map((c) => (
@@ -139,7 +161,7 @@ export default function ProductsIndex({ products, categories, suppliers, filters
                         <select
                             value={supplierId}
                             onChange={(e) => setSupplierId(e.target.value)}
-                            className="w-full rounded-xl border border-slate-200 py-2 px-3 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                         >
                             <option value="">All Suppliers</option>
                             {suppliers.map((s) => (
@@ -155,7 +177,7 @@ export default function ProductsIndex({ products, categories, suppliers, filters
                         <select
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
-                            className="w-full rounded-xl border border-slate-200 py-2 px-3 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                         >
                             <option value="">All Statuses</option>
                             <option value="active">Active</option>
@@ -190,21 +212,38 @@ export default function ProductsIndex({ products, categories, suppliers, filters
                     <table className="w-full text-left text-xs">
                         <thead className="border-b border-slate-100 bg-slate-50/75 text-slate-500">
                             <tr>
-                                <th className="py-3 px-4 font-semibold">Product</th>
-                                <th className="py-3 px-4 font-semibold">SKU</th>
-                                <th className="py-3 px-4 font-semibold">Category</th>
-                                <th className="py-3 px-4 font-semibold">Supplier</th>
-                                <th className="py-3 px-4 font-semibold">Unit Price</th>
-                                <th className="py-3 px-4 font-semibold">Current Stock</th>
-                                <th className="py-3 px-4 font-semibold">Status</th>
-                                <th className="py-3 px-4 text-right font-semibold">Actions</th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Product
+                                </th>
+                                <th className="px-4 py-3 font-semibold">SKU</th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Category
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Supplier
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Unit Price
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Current Stock
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Status
+                                </th>
+                                <th className="px-4 py-3 text-right font-semibold">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 text-slate-700">
                             {products.data.map((product) => (
-                                <tr key={product.id} className="hover:bg-slate-50/60">
+                                <tr
+                                    key={product.id}
+                                    className="hover:bg-slate-50/60"
+                                >
                                     {/* Product Name & Image */}
-                                    <td className="py-3 px-4">
+                                    <td className="px-4 py-3">
                                         <div className="flex items-center gap-3">
                                             {product.image_url ? (
                                                 <img
@@ -218,46 +257,66 @@ export default function ProductsIndex({ products, categories, suppliers, filters
                                                 </div>
                                             )}
                                             <div>
-                                                <p className="font-semibold text-slate-900">{product.name}</p>
-                                                <p className="text-[11px] text-slate-400">Unit: {product.unit}</p>
+                                                <p className="font-semibold text-slate-900">
+                                                    {product.name}
+                                                </p>
+                                                <p className="text-[11px] text-slate-400">
+                                                    Unit: {product.unit}
+                                                </p>
                                             </div>
                                         </div>
                                     </td>
 
                                     {/* SKU */}
-                                    <td className="py-3 px-4 font-mono font-medium text-slate-600">
+                                    <td className="px-4 py-3 font-mono font-medium text-slate-600">
                                         {product.sku}
                                     </td>
 
                                     {/* Category */}
-                                    <td className="py-3 px-4 text-slate-600">
-                                        {product.category?.name || <span className="text-slate-400 italic">None</span>}
+                                    <td className="px-4 py-3 text-slate-600">
+                                        {product.category?.name || (
+                                            <span className="text-slate-400 italic">
+                                                None
+                                            </span>
+                                        )}
                                     </td>
 
                                     {/* Supplier */}
-                                    <td className="py-3 px-4 text-slate-600">
-                                        {product.supplier?.name || <span className="text-slate-400 italic">None</span>}
+                                    <td className="px-4 py-3 text-slate-600">
+                                        {product.supplier?.name || (
+                                            <span className="text-slate-400 italic">
+                                                None
+                                            </span>
+                                        )}
                                     </td>
 
                                     {/* Unit Price */}
-                                    <td className="py-3 px-4 font-semibold text-slate-900">
-                                        ₱{product.unit_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    <td className="px-4 py-3 font-semibold text-slate-900">
+                                        ₱
+                                        {product.unit_price.toLocaleString(
+                                            undefined,
+                                            { minimumFractionDigits: 2 },
+                                        )}
                                     </td>
 
                                     {/* Current Stock */}
-                                    <td className="py-3 px-4">
+                                    <td className="px-4 py-3">
                                         <div className="flex items-center gap-2">
                                             <span className="font-bold text-slate-800">
                                                 {product.current_stock}
                                             </span>
-                                            {renderStockBadge(product.stock_status, product.current_stock, product.minimum_stock)}
+                                            {renderStockBadge(
+                                                product.stock_status,
+                                                product.current_stock,
+                                                product.minimum_stock,
+                                            )}
                                         </div>
                                     </td>
 
                                     {/* Active/Inactive */}
-                                    <td className="py-3 px-4">
+                                    <td className="px-4 py-3">
                                         <span
-                                            className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                                            className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase ${
                                                 product.status === 'active'
                                                     ? 'bg-emerald-100 text-emerald-800'
                                                     : 'bg-slate-100 text-slate-600'
@@ -268,7 +327,7 @@ export default function ProductsIndex({ products, categories, suppliers, filters
                                     </td>
 
                                     {/* Actions */}
-                                    <td className="py-3 px-4 text-right">
+                                    <td className="px-4 py-3 text-right">
                                         <div className="flex items-center justify-end gap-1.5">
                                             <Link
                                                 href={`/products/${product.id}`}
@@ -286,7 +345,9 @@ export default function ProductsIndex({ products, categories, suppliers, filters
                                             </Link>
                                             <button
                                                 type="button"
-                                                onClick={() => confirmDelete(product)}
+                                                onClick={() =>
+                                                    confirmDelete(product)
+                                                }
                                                 className="rounded-lg p-1.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600"
                                                 title="Delete Product"
                                             >
@@ -301,9 +362,17 @@ export default function ProductsIndex({ products, categories, suppliers, filters
 
                     {products.data.length === 0 && (
                         <div className="py-12 text-center text-slate-400">
-                            <Package size={32} className="mx-auto text-slate-300" />
-                            <p className="mt-2 text-sm font-semibold text-slate-600">No products found</p>
-                            <p className="text-xs text-slate-400">Try adjusting your search criteria or add a new product.</p>
+                            <Package
+                                size={32}
+                                className="mx-auto text-slate-300"
+                            />
+                            <p className="mt-2 text-sm font-semibold text-slate-600">
+                                No products found
+                            </p>
+                            <p className="text-xs text-slate-400">
+                                Try adjusting your search criteria or add a new
+                                product.
+                            </p>
                         </div>
                     )}
                 </div>
@@ -312,21 +381,31 @@ export default function ProductsIndex({ products, categories, suppliers, filters
                 {products.last_page > 1 && (
                     <div className="flex flex-wrap items-center justify-between border-t border-slate-100 px-4 py-3 text-xs text-slate-500">
                         <span>
-                            Showing {products.from || 0} to {products.to || 0} of {products.total} products
+                            Showing {products.from || 0} to {products.to || 0}{' '}
+                            of {products.total} products
                         </span>
                         <div className="flex items-center gap-1">
                             {products.links.map((link, idx) => (
                                 <button
                                     key={idx}
                                     disabled={!link.url}
-                                    onClick={() => link.url && router.get(link.url, {}, { preserveState: true })}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                    onClick={() =>
+                                        link.url &&
+                                        router.get(
+                                            link.url,
+                                            {},
+                                            { preserveState: true },
+                                        )
+                                    }
+                                    dangerouslySetInnerHTML={{
+                                        __html: link.label,
+                                    }}
                                     className={`rounded-lg px-2.5 py-1 font-medium transition ${
                                         link.active
                                             ? 'bg-indigo-600 text-white'
                                             : link.url
-                                            ? 'text-slate-600 hover:bg-slate-100'
-                                            : 'cursor-not-allowed text-slate-300'
+                                              ? 'text-slate-600 hover:bg-slate-100'
+                                              : 'cursor-not-allowed text-slate-300'
                                     }`}
                                 />
                             ))}
@@ -337,4 +416,3 @@ export default function ProductsIndex({ products, categories, suppliers, filters
         </AppLayout>
     );
 }
-
