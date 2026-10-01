@@ -7,7 +7,7 @@
 **Date of examination:** 1 October 2026
 **Stack under review:** Laravel 13 / PHP 8.3 / Inertia.js 3 / React 19 / TypeScript 5.7 / Tailwind CSS 4 / SQLite
 
-> **Scope of this document.** This report defends the design and implementation decisions recorded in the repository. Every performance, quality, and behavioural claim in Chapter 7 was verified by executing the command shown in the adjacent *Evidence* column against the repository at the commit named above. Claims that could **not** be verified, and known weaknesses, are stated explicitly in Chapter 9 (Limitations and Threats to Validity) rather than omitted — Chapter 10 contains prepared responses to the questions a defence panel is most likely to raise about them.
+> **Scope of this document.** This report defends the design and implementation decisions recorded in the repository. Every performance, quality, and behavioural claim in Chapter 7 was verified by executing the command shown in the adjacent _Evidence_ column against the repository at the commit named above. Claims that could **not** be verified, and known weaknesses, are stated explicitly in Chapter 9 (Limitations and Threats to Validity) rather than omitted — Chapter 10 contains prepared responses to the questions a defence panel is most likely to raise about them.
 >
 > **Citation note.** Works cited in Chapter 3 are standard, widely available references in software engineering and information systems. Verify each against your institution's required edition and referencing style before submission; do not cite without checking.
 
@@ -42,14 +42,14 @@ This report presents and defends the design, implementation, and verification of
 
 The delivered system comprises:
 
-| Area | Implementation |
-|---|---|
-| Presentation | 17 Inertia/React page components, 2 shared layouts, Tailwind CSS 4 design system |
-| Application logic | 9 controllers, 2 middleware classes, 2 route files (47 registered routes) |
-| Domain model | 6 Eloquent models, 6 domain migrations |
-| Persistence | SQLite (MySQL-compatible schema via Laravel's schema builder) |
-| Data seeding | 407-line idempotent seeder producing 14 products, 5 categories, 5 suppliers, 10 backdated transactions, 2 users |
-| Verification | Pint, PHPStan level 7 (Larastan), Pest — all green |
+| Area              | Implementation                                                                                                  |
+| ----------------- | --------------------------------------------------------------------------------------------------------------- |
+| Presentation      | 17 Inertia/React page components, 2 shared layouts, Tailwind CSS 4 design system                                |
+| Application logic | 9 controllers, 2 middleware classes, 2 route files (47 registered routes)                                       |
+| Domain model      | 6 Eloquent models, 6 domain migrations                                                                          |
+| Persistence       | SQLite (MySQL-compatible schema via Laravel's schema builder)                                                   |
+| Data seeding      | 407-line idempotent seeder producing 14 products, 5 categories, 5 suppliers, 10 backdated transactions, 2 users |
+| Verification      | Pint, PHPStan level 7 (Larastan), Pest — all green                                                              |
 
 ### 1.3 Central claim of the work
 
@@ -65,7 +65,7 @@ This single architectural decision is the thesis of the report. The remainder of
 
 Inventory management is frequently implemented as a CRUD application over a `products` table with a `quantity` column that an operator types into. The consequences of this approach are well documented in both practice and literature:
 
-1. **Silent audit-trail loss.** If the quantity is edited directly, there is no record of *who* changed it, *when*, *from what value*, or *why*. Discrepancies discovered at stocktake cannot be attributed.
+1. **Silent audit-trail loss.** If the quantity is edited directly, there is no record of _who_ changed it, _when_, _from what value_, or _why_. Discrepancies discovered at stocktake cannot be attributed.
 2. **Non-reproducible valuations.** Inventory value reported to management is derived from a mutable field, so a figure quoted last quarter cannot be reconstructed.
 3. **Structural drift.** Because quantity is an ordinary editable attribute, every client form becomes a potential writer of that field, and the number of write paths grows with the application.
 
@@ -104,7 +104,7 @@ The counter-argument — denormalisation for read performance — is acknowledge
 
 ### 3.2 Ledger and audit-trail patterns
 
-Double-entry bookkeeping and event-sourcing literature both advocate recording transactions as the primary artefact, with balances derived. In its weaker form, adopted here, this is *transactional auditing*: the ledger is authoritative and the balance is a cached projection, rather than a fully event-sourced aggregate rebuilt by replay.
+Double-entry bookkeeping and event-sourcing literature both advocate recording transactions as the primary artefact, with balances derived. In its weaker form, adopted here, this is _transactional auditing_: the ledger is authoritative and the balance is a cached projection, rather than a fully event-sourced aggregate rebuilt by replay.
 
 The distinction matters and should be stated plainly in a defence: **this system is not an event-sourced system.** It is an audit-trailed system with a mutable cached balance. The balance is protected by convention, middleware, and database locking — not by making it structurally unwritable. Chapter 9, L2, records the residual risk.
 
@@ -126,9 +126,9 @@ This system uses Inertia.js, which occupies a third position: the server still r
 
 ### 3.6 Role-based access control
 
-Role-Based Access Control (RBAC) grants permissions to a *role* rather than to an individual, so that authorisation is defined once and inherited by all members of that role (Hu et al., 2002; Sandhu et al., 1996). This system implements a minimal two-role RBAC scheme: `admin` and `staff`, distinguished by the `users.role` column and enforced by a middleware alias (`bootstrap/app.php:23–25`).
+Role-Based Access Control (RBAC) grants permissions to a _role_ rather than to an individual, so that authorisation is defined once and inherited by all members of that role (Hu et al., 2002; Sandhu et al., 1996). This system implements a minimal two-role RBAC scheme: `admin` and `staff`, distinguished by the `users.role` column and enforced by a middleware alias (`bootstrap/app.php:23–25`).
 
-Sandhu et al. distinguish RBAC from *access-matrix* models on the grounds that RBAC scales because permissions are attached to a small number of roles rather than to a matrix of user–object pairs. The two-role scheme adopted here inherits that scalability property directly.
+Sandhu et al. distinguish RBAC from _access-matrix_ models on the grounds that RBAC scales because permissions are attached to a small number of roles rather than to a matrix of user–object pairs. The two-role scheme adopted here inherits that scalability property directly.
 
 ### 3.7 Defensive security practice
 
@@ -138,13 +138,13 @@ Current OWASP guidance stresses server-side enforcement of every access control 
 
 ## 4. Research Objectives and Questions
 
-| ID | Research question | Objective | Answered in |
-|---|---|---|---|
-| RQ1 | What data model permits a stock quantity to be traced to every change that produced it? | O1, O2 | §6.3, §6.4 |
-| RQ2 | What mechanism prevents lost updates and negative stock under concurrent stock-out? | O3 | §6.4.2 |
-| RQ3 | What mechanism enforces administrator-only functions server-side? | O4 | §6.5 |
-| RQ4 | How can correctness guarantees be made repeatable and evidence-bearing? | O6 | §7 |
-| RQ5 | To what extent does the delivered system satisfy O1–O5? | O1–O5 | §7, §8 |
+| ID  | Research question                                                                       | Objective | Answered in |
+| --- | --------------------------------------------------------------------------------------- | --------- | ----------- |
+| RQ1 | What data model permits a stock quantity to be traced to every change that produced it? | O1, O2    | §6.3, §6.4  |
+| RQ2 | What mechanism prevents lost updates and negative stock under concurrent stock-out?     | O3        | §6.4.2      |
+| RQ3 | What mechanism enforces administrator-only functions server-side?                       | O4        | §6.5        |
+| RQ4 | How can correctness guarantees be made repeatable and evidence-bearing?                 | O6        | §7          |
+| RQ5 | To what extent does the delivered system satisfy O1–O5?                                 | O1–O5     | §7, §8      |
 
 ---
 
@@ -156,14 +156,14 @@ The work follows **Design Science Research (DSR)** (Peffers et al., 2007; Hevner
 
 ### 5.2 Research stages as executed
 
-| DSR stage | Activity performed | Artefact / evidence |
-|---|---|---|
-| Problem identification | Analysed failure modes of mutable-quantity inventory (§2.1) | Problem statement P1–P4 |
-| Objectives definition | Derived O1–O6 from P1–P4 | §2.3 |
-| Design and development | Iterative implementation across modules | 8,519 lines across 51 files (§7.2) |
-| Demonstration | Full application running against a seeded dataset | SQLite DB with 14 products, 10 transactions, 5 categories, 5 suppliers, 2 users |
-| Evaluation | Executed three automated gates plus manual inspection | §7.3 — reproducible outputs |
-| Communication | This report | — |
+| DSR stage              | Activity performed                                          | Artefact / evidence                                                             |
+| ---------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Problem identification | Analysed failure modes of mutable-quantity inventory (§2.1) | Problem statement P1–P4                                                         |
+| Objectives definition  | Derived O1–O6 from P1–P4                                    | §2.3                                                                            |
+| Design and development | Iterative implementation across modules                     | 8,519 lines across 51 files (§7.2)                                              |
+| Demonstration          | Full application running against a seeded dataset           | SQLite DB with 14 products, 10 transactions, 5 categories, 5 suppliers, 2 users |
+| Evaluation             | Executed three automated gates plus manual inspection       | §7.3 — reproducible outputs                                                     |
+| Communication          | This report                                                 | —                                                                               |
 
 ### 5.3 Development process model
 
@@ -253,20 +253,20 @@ The repository contains both surfaces and they share this single implementation:
 
 #### 6.3.2 Tables
 
-| Table | Purpose | Key columns |
-|---|---|---|
-| `users` | Operator accounts | `role` (admin/staff), `is_active` |
-| `categories` | Product grouping | `name` (unique), `is_active` |
-| `suppliers` | Vendors | `contact_person`, `email`, `is_active` |
-| `products` | The stock-keeping units | `sku` (unique), `unit_price`, `current_stock`, `minimum_stock`, `unit`, `status` |
-| `inventory_transactions` | **The immutable ledger** | `transaction_type`, `quantity`, `previous_stock`, `new_stock`, `unit_cost`, `total_cost`, `user_id`, `supplier_id`, `reference_number`, `reason`, `notes` |
-| `stock_adjustments` | Corroborating detail for `ADJUSTMENT` entries | `previous_quantity`, `adjusted_quantity`, `difference`, `reason` |
+| Table                    | Purpose                                       | Key columns                                                                                                                                               |
+| ------------------------ | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `users`                  | Operator accounts                             | `role` (admin/staff), `is_active`                                                                                                                         |
+| `categories`             | Product grouping                              | `name` (unique), `is_active`                                                                                                                              |
+| `suppliers`              | Vendors                                       | `contact_person`, `email`, `is_active`                                                                                                                    |
+| `products`               | The stock-keeping units                       | `sku` (unique), `unit_price`, `current_stock`, `minimum_stock`, `unit`, `status`                                                                          |
+| `inventory_transactions` | **The immutable ledger**                      | `transaction_type`, `quantity`, `previous_stock`, `new_stock`, `unit_cost`, `total_cost`, `user_id`, `supplier_id`, `reference_number`, `reason`, `notes` |
+| `stock_adjustments`      | Corroborating detail for `ADJUSTMENT` entries | `previous_quantity`, `adjusted_quantity`, `difference`, `reason`                                                                                          |
 
 #### 6.3.3 The central design decision
 
 `inventory_transactions` is a ledger, not a log of intentions. Two properties make it so:
 
-1. **It carries the before-and-after snapshot.** `previous_stock` and `new_stock` are persisted on every row (`2026_09_17_000005_create_inventory_transactions_table.php`). This means the balance at any past moment can be read directly from the ledger without replaying from zero, and the field `new_stock` of the most recent row *is* the current balance.
+1. **It carries the before-and-after snapshot.** `previous_stock` and `new_stock` are persisted on every row (`2026_09_17_000005_create_inventory_transactions_table.php`). This means the balance at any past moment can be read directly from the ledger without replaying from zero, and the field `new_stock` of the most recent row _is_ the current balance.
 
 2. **It carries the attribution.** `user_id` is non-nullable and cascades on delete, so every row records who performed the movement. `reference_number`, `reason`, and `notes` capture the business justification (purchase order, department, or a free-text reason).
 
@@ -276,13 +276,13 @@ The repository contains both surfaces and they share this single implementation:
 
 Every foreign key declares an explicit deletion behaviour, chosen per relationship rather than defaulted:
 
-| Foreign key | Policy | Rationale |
-|---|---|---|
-| `products.category_id` → `categories` | `nullOnDelete` | Removing a category must not delete stock. The product survives and becomes uncategorised. |
-| `products.supplier_id` → `suppliers` | `nullOnDelete` | Same reasoning. |
-| `inventory_transactions.product_id` → `products` | `cascadeOnDelete` | The ledger entry is meaningless without its product. |
-| `inventory_transactions.user_id` → `users` | `cascadeOnDelete` | *(Identified as a defect — §9, L3.)* |
-| `stock_adjustments.product_id`, `.user_id` | `cascadeOnDelete` | Same as above. |
+| Foreign key                                      | Policy            | Rationale                                                                                  |
+| ------------------------------------------------ | ----------------- | ------------------------------------------------------------------------------------------ |
+| `products.category_id` → `categories`            | `nullOnDelete`    | Removing a category must not delete stock. The product survives and becomes uncategorised. |
+| `products.supplier_id` → `suppliers`             | `nullOnDelete`    | Same reasoning.                                                                            |
+| `inventory_transactions.product_id` → `products` | `cascadeOnDelete` | The ledger entry is meaningless without its product.                                       |
+| `inventory_transactions.user_id` → `users`       | `cascadeOnDelete` | _(Identified as a defect — §9, L3.)_                                                       |
+| `stock_adjustments.product_id`, `.user_id`       | `cascadeOnDelete` | Same as above.                                                                             |
 
 The category/supplier deletion guards in the controllers (`CategoryController.php:68`, `SupplierController.php:70`) reinforce this: the application refuses to delete a category or supplier that still has products, returning an actionable message, so the `nullOnDelete` path is a safety net rather than the normal flow. This is defence in depth — the database would be consistent regardless, but the user gets a better outcome.
 
@@ -311,7 +311,7 @@ Two independent mechanisms enforce this.
 
 **Mechanism 1 — the write path is absent.** `ProductController::update` validates and writes `name`, `sku`, `category_id`, `supplier_id`, `description`, `unit_price`, `minimum_stock`, `unit`, and `status` — but **not `current_stock`** (`ProductController.php:141–175`). Contrast with `store` (`ProductController.php:63–97`), which does accept an opening `current_stock`. An operator editing a product in the UI therefore has no control over stock, because no such control is rendered and no such field is accepted.
 
-This is the enforcement that matters most, and it is worth stating carefully in a defence: it is a *convention enforced by omission*, not a type-system or database guarantee. Its strength is that it is checked by review and by the test suite (§9, L1); its weakness is equally real — a developer adding `'current_stock' => $validated['current_stock']` to that array would reintroduce the vulnerability with no compiler or database objection. The genuinely robust fix is to move the update into a service method that never accepts a stock argument; see §11.
+This is the enforcement that matters most, and it is worth stating carefully in a defence: it is a _convention enforced by omission_, not a type-system or database guarantee. Its strength is that it is checked by review and by the test suite (§9, L1); its weakness is equally real — a developer adding `'current_stock' => $validated['current_stock']` to that array would reintroduce the vulnerability with no compiler or database objection. The genuinely robust fix is to move the update into a service method that never accepts a stock argument; see §11.
 
 **Mechanism 2 — the domain accessor exposes status, not mutation.** `Product` declares `current_stock` absent from `$fillable` (`Product.php:32–44`), so `Product::create(['current_stock' => …])` in a controller's mass-assignment style silently ignores the field. Combined with Mechanism 1, the two remaining mass-assign paths (`store` at creation time and the three ledger writes) are all visible at review time.
 
@@ -330,7 +330,7 @@ Two units of stock were issued from a balance of five, and — worse — the led
 
 **The mitigation, in three layers.**
 
-1. **Pessimistic row lock.** `Product::lockForUpdate()->findOrFail(...)` emits `SELECT … FOR UPDATE`, acquiring a row-level exclusive lock held until the enclosing transaction commits or rolls back. T2 now blocks at the `SELECT` until T1 commits, and then reads the *post-commit* value.
+1. **Pessimistic row lock.** `Product::lockForUpdate()->findOrFail(...)` emits `SELECT … FOR UPDATE`, acquiring a row-level exclusive lock held until the enclosing transaction commits or rolls back. T2 now blocks at the `SELECT` until T1 commits, and then reads the _post-commit_ value.
 
 2. **Explicit transaction.** `DB::transaction(...)` wraps both the balance update and the ledger insert. If the ledger insert fails, the balance change rolls back. Balance and ledger are therefore updated **atomically** — they cannot diverge even on partial failure.
 
@@ -344,13 +344,13 @@ if ($quantity > $product->current_stock) {
 }
 ```
 
-Layer 3 is not redundant with layers 1 and 2. Under the lock, the check is correct by construction; but the check is also the source of the user-facing error message, and it makes the rule testable without a database. Note that it is placed *inside* the lock, which is what makes it correct — a check performed before acquiring the lock would be subject to exactly the same race as the original bug.
+Layer 3 is not redundant with layers 1 and 2. Under the lock, the check is correct by construction; but the check is also the source of the user-facing error message, and it makes the rule testable without a database. Note that it is placed _inside_ the lock, which is what makes it correct — a check performed before acquiring the lock would be subject to exactly the same race as the original bug.
 
 **Cost, stated honestly.** Layer 1 reduces throughput on a contended SKU: concurrent stock-out transactions against the same product serialise. Layers 2 and 3 each impose a database round trip. For an inventory system where a single SKU may receive hundreds of write requests per minute during a stocktake, this is an acceptable trade for guaranteed ledger integrity. For a high-write SKU in a very large deployment, the correct alternative would be optimistic control with retry on version mismatch — a change confined to the three transaction closures, since the transaction boundary already exists.
 
 #### 6.4.3 Adjustment: a special case worth defending
 
-`adjustment()` (`InventoryController.php:142–183`) sets stock to an *absolute* count rather than applying a delta, because stocktaking is a physical count. It writes **two** rows:
+`adjustment()` (`InventoryController.php:142–183`) sets stock to an _absolute_ count rather than applying a delta, because stocktaking is a physical count. It writes **two** rows:
 
 - `stock_adjustments` — the detailed before/after/difference/reason record.
 - `inventory_transactions` with type `ADJUSTMENT` — so that the ledger remains the complete history and stock-movement reporting (which reads only `inventory_transactions`) does not have to union two tables.
@@ -390,12 +390,14 @@ The administrator-only surface is therefore: `/inventory/adjustment` (GET, POST)
 
 The middleware handles both transports correctly, returning HTTP 403 JSON for API-style requests and a redirect with a flash message for browsers (`AdminMiddleware.php:14–19`) — a small but real detail that panel members frequently probe.
 
-#### 6.5.2 Client-side authorisation is present but is *not* the control
+#### 6.5.2 Client-side authorisation is present but is _not_ the control
 
 `AppLayout.tsx` filters the navigation to hide admin items from staff:
 
 ```tsx
-const filteredNav = navItems.filter((item) => !item.adminOnly || user?.role === 'admin');
+const filteredNav = navItems.filter(
+    (item) => !item.adminOnly || user?.role === 'admin',
+);
 ```
 
 This is explicitly **not** a security control — it is a usability measure. The actual control is the middleware above, and it is server-side. A staff user who hand-crafts a POST to `/inventory/adjustment` receives a redirect and no database write. Stating this distinction clearly is important: it demonstrates awareness that UI hiding is not enforcement.
@@ -415,17 +417,17 @@ This is explicitly **not** a security control — it is a usability measure. The
 
 #### 6.5.4 Other controls
 
-| Control | Implementation | Location |
-|---|---|---|
-| Password hashing | `'password' => 'hashed'` cast — bcrypt by default | `User.php:46` |
-| Password exposure | `password`, `remember_token` in `$hidden` | `User.php:37–40` |
-| Mass-assignment protection | `$fillable` allowlist on all 6 models | every model |
-| SQL injection | Eloquent parameter binding throughout; no raw user input interpolated | all controllers |
-| CSRF | Laravel VerifyCsrfToken on the web stack | framework default |
-| Privilege escalation | `role` validated as `in:admin,staff`; only admins reach `UserController` | `UserController.php:42`, `routes/web.php:61` |
-| File upload | `image` rule, `max:2048` KB, stored on the `public` disk under a generated name | `ProductController.php:73` |
-| Unauthorised deletion | Category/supplier deletion blocked while products are attached | `CategoryController.php:68`, `SupplierController.php:70` |
-| Input validation | `validate()` on every mutating action, ~20 rules per resource | all controllers |
+| Control                    | Implementation                                                                  | Location                                                 |
+| -------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Password hashing           | `'password' => 'hashed'` cast — bcrypt by default                               | `User.php:46`                                            |
+| Password exposure          | `password`, `remember_token` in `$hidden`                                       | `User.php:37–40`                                         |
+| Mass-assignment protection | `$fillable` allowlist on all 6 models                                           | every model                                              |
+| SQL injection              | Eloquent parameter binding throughout; no raw user input interpolated           | all controllers                                          |
+| CSRF                       | Laravel VerifyCsrfToken on the web stack                                        | framework default                                        |
+| Privilege escalation       | `role` validated as `in:admin,staff`; only admins reach `UserController`        | `UserController.php:42`, `routes/web.php:61`             |
+| File upload                | `image` rule, `max:2048` KB, stored on the `public` disk under a generated name | `ProductController.php:73`                               |
+| Unauthorised deletion      | Category/supplier deletion blocked while products are attached                  | `CategoryController.php:68`, `SupplierController.php:70` |
+| Input validation           | `validate()` on every mutating action, ~20 rules per resource                   | all controllers                                          |
 
 #### 6.5.5 Assessment against current guidance
 
@@ -448,17 +450,17 @@ This was not done. The justification: with three write paths, one of which (`adj
 
 ### 6.8 Data seeding and the demonstrable dataset
 
-The 407-line seeder is idempotent (`firstOrCreate` throughout) and produces a dataset chosen to *demonstrate every branch of the domain*, not merely to fill a table:
+The 407-line seeder is idempotent (`firstOrCreate` throughout) and produces a dataset chosen to _demonstrate every branch of the domain_, not merely to fill a table:
 
-| Fixture | Purpose |
-|---|---|
-| `Logitech MX Master 3S Mouse` — stock 8, min 15 | Exercises the **low stock** branch |
-| `Heavy Duty 2-Drawer Filing Cabinet` — stock 0, min 4 | Exercises the **out-of-stock** branch |
-| `Anker 65W GaN Fast Charger` — stock 0, min 10 | Second out-of-stock case |
-| 10 transactions spread over 1–25 days | Exercises **date-range filtering** and the 7-day chart series |
-| Transactions with and without `supplier_id` | Exercises null-relationship rendering |
-| Mixed `unit` values (`pcs`, `box`, `pack`) | Exercises unit-aware formatting in stock messages |
-| Two users, one `admin`, one `staff` | Exercises **both sides of the RBAC boundary** |
+| Fixture                                               | Purpose                                                       |
+| ----------------------------------------------------- | ------------------------------------------------------------- |
+| `Logitech MX Master 3S Mouse` — stock 8, min 15       | Exercises the **low stock** branch                            |
+| `Heavy Duty 2-Drawer Filing Cabinet` — stock 0, min 4 | Exercises the **out-of-stock** branch                         |
+| `Anker 65W GaN Fast Charger` — stock 0, min 10        | Second out-of-stock case                                      |
+| 10 transactions spread over 1–25 days                 | Exercises **date-range filtering** and the 7-day chart series |
+| Transactions with and without `supplier_id`           | Exercises null-relationship rendering                         |
+| Mixed `unit` values (`pcs`, `box`, `pack`)            | Exercises unit-aware formatting in stock messages             |
+| Two users, one `admin`, one `staff`                   | Exercises **both sides of the RBAC boundary**                 |
 
 This is a defensible design decision: a dataset that exercises every branch converts manual QA from an exploratory activity into a verification activity, and it directly serves the reporting features.
 
@@ -474,27 +476,27 @@ Three automated gates were executed against the repository. Each was run on 1 Oc
 
 ### 7.2 Artefact inventory
 
-| Layer | Files | Lines |
-|---|---:|---:|
-| Presentation — pages (`resources/js/pages`) | 17 | 6,127 |
-| Presentation — layouts (`resources/js/layouts`) | 2 | 288 |
-| Application (`app/`) | 19 | 1,294 |
-| Routes (`routes/`) | 3 | 127 |
-| Migrations (`database/migrations`) | 9 | 276 |
-| Seeder (`database/seeders`) | 1 | 407 |
-| **Total (PHP + TS/TSX)** | **51** | **8,519** |
+| Layer                                           |  Files |     Lines |
+| ----------------------------------------------- | -----: | --------: |
+| Presentation — pages (`resources/js/pages`)     |     17 |     6,127 |
+| Presentation — layouts (`resources/js/layouts`) |      2 |       288 |
+| Application (`app/`)                            |     19 |     1,294 |
+| Routes (`routes/`)                              |      3 |       127 |
+| Migrations (`database/migrations`)              |      9 |       276 |
+| Seeder (`database/seeders`)                     |      1 |       407 |
+| **Total (PHP + TS/TSX)**                        | **51** | **8,519** |
 
 Registered routes: **47**. Data model: **6 tables**. Controllers: **9**. Models: **6**.
 
 ### 7.3 Gate results
 
-| # | Gate | Command | Scope | Result |
-|---|---|---|---|---|
-| G1 | Code style | `vendor/bin/pint --parallel --test` | PSR-12 / Laravel preset | **PASS** |
-| G2 | Static analysis | `vendor/bin/phpstan analyse --memory-limit=512M` | `app/`, `bootstrap/`, `config/`, `database/`, `routes/` at **level 7** | **PASS** — 0 errors |
-| G3 | Behaviour | `php artisan test` | Pest test suite | **PASS** — 2 tests, 3 assertions |
-| G4 | Route integrity | `php artisan route:list` | All routes | **PASS** — 47 routes resolve |
-| G5 | Schema + seed | `php artisan tinker` queries | Live SQLite database | **PASS** — 14 products, 10 transactions, 5 categories, 5 suppliers, 2 users |
+| #   | Gate            | Command                                          | Scope                                                                  | Result                                                                      |
+| --- | --------------- | ------------------------------------------------ | ---------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| G1  | Code style      | `vendor/bin/pint --parallel --test`              | PSR-12 / Laravel preset                                                | **PASS**                                                                    |
+| G2  | Static analysis | `vendor/bin/phpstan analyse --memory-limit=512M` | `app/`, `bootstrap/`, `config/`, `database/`, `routes/` at **level 7** | **PASS** — 0 errors                                                         |
+| G3  | Behaviour       | `php artisan test`                               | Pest test suite                                                        | **PASS** — 2 tests, 3 assertions                                            |
+| G4  | Route integrity | `php artisan route:list`                         | All routes                                                             | **PASS** — 47 routes resolve                                                |
+| G5  | Schema + seed   | `php artisan tinker` queries                     | Live SQLite database                                                   | **PASS** — 14 products, 10 transactions, 5 categories, 5 suppliers, 2 users |
 
 **Interpretation of the gates.** G1 and G2 are meaningful and should be presented as such. PHPStan level 7 is a demanding setting — it resolves types across Eloquent relations, so the `BelongsTo<Category, $this>` / `HasMany<Product, $this>` annotations throughout the models are doing real work, not decoration; and passing it with Larastan's Eloquent extensions means the generic relation types are consistent. Passing Pint means formatting is uniform and reviewable.
 
@@ -520,9 +522,9 @@ One performance characteristic was instrumented rather than asserted.
 
 **Finding F1 — the dashboard chart series issues 14 queries.** `DashboardController.php:47–65` builds the 7-day series in a PHP loop, running two aggregate queries per day:
 
-| Loop iterations | Queries per iteration | Total |
-|---:|---:|---:|
-| 7 | 2 | **14** (verified by query-log instrumentation) |
+| Loop iterations | Queries per iteration |                                          Total |
+| --------------: | --------------------: | ---------------------------------------------: |
+|               7 |                     2 | **14** (verified by query-log instrumentation) |
 
 The fix is a single grouped query using conditional aggregation:
 
@@ -548,33 +550,33 @@ Both are O(n) in memory over the whole table. On the seeded dataset (14 products
 
 Beyond the automated gates, the critical user journeys were traced against the code path that serves them:
 
-| Journey | Code path | Result |
-|---|---|---|
-| Staff reaches `/inventory/adjustment` | `routes/web.php:63` → `AdminMiddleware.php:13` | Redirected to dashboard with error flash — **enforced** |
-| Stock-out exceeding balance | `InventoryController.php:102` | `ValidationException` with quantity-specific message — **enforced** |
-| Concurrent stock-out | `InventoryController.php:46` + `:98` | Serialised by `FOR UPDATE` inside transaction — **enforced by construction** |
-| Stock edited via product update form | `ProductController.php:141–175` | `current_stock` absent from validation and update — **field not accepted** |
-| Deactivated user logging in | `AuthController.php:33` | Logged out with explanatory error — **enforced at login** |
-| Deactivated user with an *existing* session | *(no check on any subsequent request)* | **NOT enforced** — §9, L1/L8 |
-| Session fixation attempt | `AuthController.php:41` | Session ID regenerated post-login — **enforced** |
-| Deleting a category with products | `CategoryController.php:68` | Blocked with actionable message — **enforced** |
-| SKU uniqueness on create | `ProductController.php:65` | Validation rule rejects — **enforced** |
-| Editing stock bypassing the ledger | `Product.php:32` (`$fillable`) + above | Mass-assignment ignores the field — **enforced by omission** |
+| Journey                                     | Code path                                      | Result                                                                       |
+| ------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------- |
+| Staff reaches `/inventory/adjustment`       | `routes/web.php:63` → `AdminMiddleware.php:13` | Redirected to dashboard with error flash — **enforced**                      |
+| Stock-out exceeding balance                 | `InventoryController.php:102`                  | `ValidationException` with quantity-specific message — **enforced**          |
+| Concurrent stock-out                        | `InventoryController.php:46` + `:98`           | Serialised by `FOR UPDATE` inside transaction — **enforced by construction** |
+| Stock edited via product update form        | `ProductController.php:141–175`                | `current_stock` absent from validation and update — **field not accepted**   |
+| Deactivated user logging in                 | `AuthController.php:33`                        | Logged out with explanatory error — **enforced at login**                    |
+| Deactivated user with an _existing_ session | _(no check on any subsequent request)_         | **NOT enforced** — §9, L1/L8                                                 |
+| Session fixation attempt                    | `AuthController.php:41`                        | Session ID regenerated post-login — **enforced**                             |
+| Deleting a category with products           | `CategoryController.php:68`                    | Blocked with actionable message — **enforced**                               |
+| SKU uniqueness on create                    | `ProductController.php:65`                     | Validation rule rejects — **enforced**                                       |
+| Editing stock bypassing the ledger          | `Product.php:32` (`$fillable`) + above         | Mass-assignment ignores the field — **enforced by omission**                 |
 
 ---
 
 ## 8. Discussion: Findings Against Objectives
 
-| Objective | Status | Evidence |
-|---|---|---|
-| **O1** Immutable, attributable ledger | **Met** | `inventory_transactions` carries `previous_stock`, `new_stock`, non-null `user_id`, `reference_number`, `reason`; 6 write paths all in `DB::transaction` |
-| **O2** Stock changed only via ledger | **Met with a caveat** | Enforced by omission from the update path + `$fillable` exclusion. Not a structural guarantee (§6.4.1, §9, L1) |
-| **O3** No negative stock under concurrency | **Met** | `lockForUpdate()` + `DB::transaction` + in-lock negative guard. Three layers, verified by trace |
-| **O4** Server-side RBAC | **Met** | `AdminMiddleware` alias applied to a route group; client-side nav filtering is explicitly not the control |
-| **O5** Reporting | **Met functionally** | Dashboard KPIs, 7-day chart, inventory valuation, stock movement, low stock — all present. Scalability limits recorded (§7.4) |
-| **O6** Repeatable quality gate | **Partially met** | G1/G2/G4/G5 are real and repeatable. **G3 does not test any business rule** (§7.3, §9, L1) |
+| Objective                                  | Status                | Evidence                                                                                                                                                 |
+| ------------------------------------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **O1** Immutable, attributable ledger      | **Met**               | `inventory_transactions` carries `previous_stock`, `new_stock`, non-null `user_id`, `reference_number`, `reason`; 6 write paths all in `DB::transaction` |
+| **O2** Stock changed only via ledger       | **Met with a caveat** | Enforced by omission from the update path + `$fillable` exclusion. Not a structural guarantee (§6.4.1, §9, L1)                                           |
+| **O3** No negative stock under concurrency | **Met**               | `lockForUpdate()` + `DB::transaction` + in-lock negative guard. Three layers, verified by trace                                                          |
+| **O4** Server-side RBAC                    | **Met**               | `AdminMiddleware` alias applied to a route group; client-side nav filtering is explicitly not the control                                                |
+| **O5** Reporting                           | **Met functionally**  | Dashboard KPIs, 7-day chart, inventory valuation, stock movement, low stock — all present. Scalability limits recorded (§7.4)                            |
+| **O6** Repeatable quality gate             | **Partially met**     | G1/G2/G4/G5 are real and repeatable. **G3 does not test any business rule** (§7.3, §9, L1)                                                               |
 
-**Answering RQ5 honestly:** five of six objectives are met; O6 is partially met. The system's *correctness* properties (O1–O4) are enforced by mechanisms that have been traced and verified. Its *demonstration* of correctness (O6) is inadequate, because the evidence for those mechanisms is manual tracing rather than regression tests that would fail if the mechanisms were removed. **This is the single most consequential gap in the work**, and §11 prioritises closing it.
+**Answering RQ5 honestly:** five of six objectives are met; O6 is partially met. The system's _correctness_ properties (O1–O4) are enforced by mechanisms that have been traced and verified. Its _demonstration_ of correctness (O6) is inadequate, because the evidence for those mechanisms is manual tracing rather than regression tests that would fail if the mechanisms were removed. **This is the single most consequential gap in the work**, and §11 prioritises closing it.
 
 ---
 
@@ -585,25 +587,25 @@ This chapter is deliberately frank. A defence report that claims no limitations 
 ### 9.1 Limitations of the system
 
 **L1 — No automated coverage of business logic. (Most serious.)**
-The entire behaviour-critical surface — the negative-stock guard, the locking, the role boundary, SKU normalisation, the image lifecycle, the adjustment double-write — is untested. The test suite contains one trivial feature test and one assertion that `true` is true. *Consequence:* a regression that removes the `lockForUpdate()` call, or the `is_active` check, or the `current_stock` exclusion, would pass every gate. *Mitigation:* §11, F1.
+The entire behaviour-critical surface — the negative-stock guard, the locking, the role boundary, SKU normalisation, the image lifecycle, the adjustment double-write — is untested. The test suite contains one trivial feature test and one assertion that `true` is true. _Consequence:_ a regression that removes the `lockForUpdate()` call, or the `is_active` check, or the `current_stock` exclusion, would pass every gate. _Mitigation:_ §11, F1.
 
 **L2 — O2 is enforced by convention, not by type.**
-`current_stock` is excluded from the product update path by the absence of a line of code, not by any construct that prevents its addition. The `$fillable` exclusion provides a second, weaker net. A determined or careless future change can reintroduce direct stock mutation without any tool objecting. *Mitigation:* §11, F2.
+`current_stock` is excluded from the product update path by the absence of a line of code, not by any construct that prevents its addition. The `$fillable` exclusion provides a second, weaker net. A determined or careless future change can reintroduce direct stock mutation without any tool objecting. _Mitigation:_ §11, F2.
 
 **L3 — Deleting a user destroys their audit trail.**
-`inventory_transactions.user_id` uses `cascadeOnDelete`. Deleting an operator permanently removes every movement they recorded — from a system whose purpose is to attribute movements to people. The schema is internally consistent but defeats the audit objective for the deleted identity. *Root cause:* the design chose referential integrity over historical preservation; for an audit ledger, `restrictOnDelete` (or a soft-deleted user reference) is the correct choice. This is a design error, not an oversight. *Mitigation:* §11, F3.
+`inventory_transactions.user_id` uses `cascadeOnDelete`. Deleting an operator permanently removes every movement they recorded — from a system whose purpose is to attribute movements to people. The schema is internally consistent but defeats the audit objective for the deleted identity. _Root cause:_ the design chose referential integrity over historical preservation; for an audit ledger, `restrictOnDelete` (or a soft-deleted user reference) is the correct choice. This is a design error, not an oversight. _Mitigation:_ §11, F3.
 
 **L4 — Monetary values pass through binary floating point.**
-`unit_price` and `total_cost` are `DECIMAL(12,2)` in the database but cast to `float` (`Product.php:54`, `InventoryTransaction.php:54–55`). Valuations are then summed in PHP (`ReportController.php:41`, `:48`). Binary floats cannot represent 0.1 exactly, so per-row values and derived totals carry representation error, and totals are not guaranteed to equal the sum of their parts. *Mitigation:* §11, F4.
+`unit_price` and `total_cost` are `DECIMAL(12,2)` in the database but cast to `float` (`Product.php:54`, `InventoryTransaction.php:54–55`). Valuations are then summed in PHP (`ReportController.php:41`, `:48`). Binary floats cannot represent 0.1 exactly, so per-row values and derived totals carry representation error, and totals are not guaranteed to equal the sum of their parts. _Mitigation:_ §11, F4.
 
 **L5 — Reports do not scale.**
 `stockMovement` loads every transaction for every product into memory; `inventory` loads the full product set unpaginated. Both are O(n) in the whole table (§7.4). Acceptable at the target scale, unacceptable beyond it.
 
 **L6 — Adjustment direction is not recorded.**
-`ADJUSTMENT` ledger rows store `quantity = abs($difference)`, so a shrink is indistinguishable from a growth by inspecting the row alone; direction must be inferred from the sign change between `previous_stock` and `new_stock`. *Mitigation:* §11, F5.
+`ADJUSTMENT` ledger rows store `quantity = abs($difference)`, so a shrink is indistinguishable from a growth by inspecting the row alone; direction must be inferred from the sign change between `previous_stock` and `new_stock`. _Mitigation:_ §11, F5.
 
 **L7 — No throttling on authentication.**
-Neither `routes/web.php:17` nor `routes/api.php:12` applies `throttle`. The login endpoint accepts unlimited attempts, permitting online password guessing. The root cause is that `routes/web.php` applies no `throttle` middleware to the guest group. *Mitigation:* §11, F6.
+Neither `routes/web.php:17` nor `routes/api.php:12` applies `throttle`. The login endpoint accepts unlimited attempts, permitting online password guessing. The root cause is that `routes/web.php` applies no `throttle` middleware to the guest group. _Mitigation:_ §11, F6.
 
 **L8 — Account deactivation is not enforced per request.**
 `is_active` is checked only at login (`AuthController.php:33`). A user who is already authenticated is never re-checked; deactivating an account does not revoke an existing session. Staff demoted to a non-admin role likewise retain their session until it expires. The correct mechanism is a per-request check in middleware or a policy gate.
@@ -630,9 +632,9 @@ The `resources/js/actions/`, `resources/js/routes/`, and `resources/js/wayfinder
 
 **T1 — Construct validity.** User requirements were elicited from a single stakeholder context and codified without a formal elicitation technique. The domain model may not match an organisation whose real process includes consignment, batch/serial tracking, or multi-warehouse transfer. None of these were in scope.
 
-**T2 — Internal validity.** DSR evaluations commonly lack controls — there is no A/B comparison against an alternative design, and no user study. The claim that this design is *better* than a mutable-quantity CRUD system rests on reasoned argument (§2.1) and code inspection (§7.5), not on measurement.
+**T2 — Internal validity.** DSR evaluations commonly lack controls — there is no A/B comparison against an alternative design, and no user study. The claim that this design is _better_ than a mutable-quantity CRUD system rests on reasoned argument (§2.1) and code inspection (§7.5), not on measurement.
 
-**T3 — Construct validity of the quality gates.** Passing PHPStan and Pint demonstrates conformance to those tools' rules. It does not demonstrate correctness. Presenting G1/G2 as evidence of system quality would be a category error; they are presented here as evidence of *discipline*, and G3's insufficiency is stated explicitly.
+**T3 — Construct validity of the quality gates.** Passing PHPStan and Pint demonstrates conformance to those tools' rules. It does not demonstrate correctness. Presenting G1/G2 as evidence of system quality would be a category error; they are presented here as evidence of _discipline_, and G3's insufficiency is stated explicitly.
 
 **T4 — External validity.** Single-database (SQLite), single-process, single-organisation deployment. Nothing in the evaluation exercised behaviour under production concurrency, at production data volume, or over a network. The `FOR UPDATE` analysis in §6.4.2 is reasoned from database semantics, **not** from an executed concurrency test — such a test has not been written.
 
@@ -656,7 +658,7 @@ The gap is quantifiable: roughly 15 test cases would close it — one per mutati
 
 ---
 
-**Q2. You say stock cannot be edited directly, but you have not *proved* it — you have shown that one code path omits it.**
+**Q2. You say stock cannot be edited directly, but you have not _proved_ it — you have shown that one code path omits it.**
 
 Correct, and that is L2. The enforcement is by omission plus `$fillable` exclusion. Neither is a guarantee; both are conventions that a reviewer and a test would catch, but neither prevents a future line from reintroducing the vulnerability.
 
@@ -668,7 +670,7 @@ The structurally correct answer is that `current_stock` should not be a writable
 
 Nothing. `inventory_transactions.user_id` is `cascadeOnDelete`, so deleting an operator deletes every movement they recorded (L3). That is a genuine design error on my part.
 
-The reasoning went wrong in the direction of referential integrity: I chose the deletion behaviour that keeps the database free of dangling references, and I did not notice that for an *audit* table, a dangling reference is less harmful than a deleted record. The correct choices are `restrictOnDelete`, which forbids deleting an operator who has movements, or `nullOnDelete` with the user's name snapshotted onto the transaction row.
+The reasoning went wrong in the direction of referential integrity: I chose the deletion behaviour that keeps the database free of dangling references, and I did not notice that for an _audit_ table, a dangling reference is less harmful than a deleted record. The correct choices are `restrictOnDelete`, which forbids deleting an operator who has movements, or `nullOnDelete` with the user's name snapshotted onto the transaction row.
 
 I did notice a related symptom — the UI renders a `'Deleted Product'` fallback for transaction rows whose product is gone (`DashboardController.php:74`) — and did not follow it to the cause. The cascade makes that state unreachable, so I wrote defensive code for an impossibility instead of fixing the constraint. F3 in §11.
 
@@ -698,11 +700,11 @@ The cost of serialisation is throughput on one SKU, which inventory does not nee
 
 ---
 
-**Q7. Why did you check for negative stock in PHP *and* use a row lock? Is the check redundant?**
+**Q7. Why did you check for negative stock in PHP _and_ use a row lock? Is the check redundant?**
 
 No, and the placement is the point. The lock makes the check correct by construction — the check cannot be stale. But the check is also the source of the user-facing message ("Cannot remove 6 items. Only 5 pcs currently in stock"), and it makes the rule testable without a database.
 
-The ordering matters and is the part I would most want examined: the guard is *inside* the lock. A check placed before `lockForUpdate()` would be subject to precisely the race the lock exists to prevent — both requests read 5, both check and pass, both write −1. Layers that look redundant are only redundant if order is irrelevant; here it is decisive.
+The ordering matters and is the part I would most want examined: the guard is _inside_ the lock. A check placed before `lockForUpdate()` would be subject to precisely the race the lock exists to prevent — both requests read 5, both check and pass, both write −1. Layers that look redundant are only redundant if order is irrelevant; here it is decisive.
 
 ---
 
@@ -710,7 +712,7 @@ The ordering matters and is the part I would most want examined: the guard is *i
 
 It is denormalisation, deliberately, and it cannot go stale: both values are computed inside the same transaction that performs the write, from a row locked against concurrent modification. There is no interval in which the snapshot disagrees with the balance it was taken under.
 
-The benefit is that the balance at any historical instant is a single indexed lookup — `new_stock` of the last row before date *X* — rather than a replay from zero. For the stock-movement report and for any future period-end valuation, that is a large saving.
+The benefit is that the balance at any historical instant is a single indexed lookup — `new_stock` of the last row before date _X_ — rather than a replay from zero. For the stock-movement report and for any future period-end valuation, that is a large saving.
 
 ---
 
@@ -766,7 +768,7 @@ Close L1. Write the ~15 missing tests, and in particular a concurrency test that
 
 Development and demonstration. The schema is written entirely through Laravel's schema builder with standard column and constraint types, so the identical migrations target MySQL or PostgreSQL with no modification — the portability the design intended is preserved in the schema, not just the intent.
 
-It is not a production claim. SQLite serialises writers at the file level, which is precisely the concurrency characteristic §6.4.2 depends on being delegated to the database. Under MySQL InnoDB the `FOR UPDATE` semantics are real row locks; under SQLite they are database-level serialisation. Both are *more* correct than no lock, so the design holds — but they are not the same mechanism, and I would re-run the concurrency test against the production engine before making claims about throughput.
+It is not a production claim. SQLite serialises writers at the file level, which is precisely the concurrency characteristic §6.4.2 depends on being delegated to the database. Under MySQL InnoDB the `FOR UPDATE` semantics are real row locks; under SQLite they are database-level serialisation. Both are _more_ correct than no lock, so the design holds — but they are not the same mechanism, and I would re-run the concurrency test against the production engine before making claims about throughput.
 
 **A2. How is this different from a spreadsheet?**
 
@@ -807,33 +809,33 @@ Objectives O1 through O5 are met. O6 is partially met: the gate is repeatable, b
 
 **Tier 1 — correctness and integrity (before any production use)**
 
-| # | Action | Closes | Effort |
-|---|---|---|---|
-| **F1** | Write the missing test suite: ~15 cases covering all three mutation paths, the negative-stock guard, both role boundaries, SKU uniqueness, image lifecycle, and a parallel-request concurrency test | L1 | 1 week |
-| **F2** | Move the balance invariant into the database — trigger or generated column on `inventory_transactions` insert — or introduce a `StockService` exposing only `receive`/`issue`/`recount` and remove `current_stock` from `store` | L2, Q4 | 1 week |
-| **F3** | Change `inventory_transactions.user_id` to `restrictOnDelete`; snapshot the operator's display name onto the transaction row; delete the unreachable `'Deleted Product'` fallbacks | L3, L13 | 0.5 day |
-| **F4** | Remove monetary `float` casts; represent money as scaled integers in minor units or via a decimal type | L4 | 1 day |
+| #      | Action                                                                                                                                                                                                                          | Closes  | Effort  |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------- |
+| **F1** | Write the missing test suite: ~15 cases covering all three mutation paths, the negative-stock guard, both role boundaries, SKU uniqueness, image lifecycle, and a parallel-request concurrency test                             | L1      | 1 week  |
+| **F2** | Move the balance invariant into the database — trigger or generated column on `inventory_transactions` insert — or introduce a `StockService` exposing only `receive`/`issue`/`recount` and remove `current_stock` from `store` | L2, Q4  | 1 week  |
+| **F3** | Change `inventory_transactions.user_id` to `restrictOnDelete`; snapshot the operator's display name onto the transaction row; delete the unreachable `'Deleted Product'` fallbacks                                              | L3, L13 | 0.5 day |
+| **F4** | Remove monetary `float` casts; represent money as scaled integers in minor units or via a decimal type                                                                                                                          | L4      | 1 day   |
 
 **Tier 2 — security and operational readiness**
 
-| # | Action | Closes | Effort |
-|---|---|---|---|
-| **F5** | Add a signed `direction` column to `ADJUSTMENT` transactions | L6 | 0.5 day |
-| **F6** | Apply `throttle` to authentication routes; add a per-request `is_active` and role re-check in middleware | L7, L8 | 1 day |
-| **F7** | Extract `routes/api.php` closures into controllers with `FormRequest` classes; add API versioning and throttle | L11 | 2 days |
-| **F8** | Derive reorder points from consumption history and supplier lead time | A3 | 1 week |
-| **F9** | Add queue-backed notifications for low-stock thresholds | — | 2 days |
+| #      | Action                                                                                                         | Closes | Effort  |
+| ------ | -------------------------------------------------------------------------------------------------------------- | ------ | ------- |
+| **F5** | Add a signed `direction` column to `ADJUSTMENT` transactions                                                   | L6     | 0.5 day |
+| **F6** | Apply `throttle` to authentication routes; add a per-request `is_active` and role re-check in middleware       | L7, L8 | 1 day   |
+| **F7** | Extract `routes/api.php` closures into controllers with `FormRequest` classes; add API versioning and throttle | L11    | 2 days  |
+| **F8** | Derive reorder points from consumption history and supplier lead time                                          | A3     | 1 week  |
+| **F9** | Add queue-backed notifications for low-stock thresholds                                                        | —      | 2 days  |
 
 **Tier 3 — scale and quality**
 
-| # | Action | Closes | Effort |
-|---|---|---|---|
-| **F10** | Replace the 14-query chart loop with a single conditional-aggregation query | F1 (§7.4) | 0.5 day |
-| **F11** | Aggregate report endpoints in SQL; paginate the inventory report | L5 | 2 days |
-| **F12** | Introduce a service layer and a policies/authorisation layer; extract business rules from controllers | L10 | 1 week |
-| **F13** | Add soft deletes to `products` and `users` | L13 | 0.5 day |
-| **F14** | Move demonstration credentials out of version control to a local-only seed command | L9 | 0.5 day |
-| **F15** | Add batch/serial-number tracking and multi-warehouse transfers | T1 | 1 sprint |
+| #       | Action                                                                                                | Closes    | Effort   |
+| ------- | ----------------------------------------------------------------------------------------------------- | --------- | -------- |
+| **F10** | Replace the 14-query chart loop with a single conditional-aggregation query                           | F1 (§7.4) | 0.5 day  |
+| **F11** | Aggregate report endpoints in SQL; paginate the inventory report                                      | L5        | 2 days   |
+| **F12** | Introduce a service layer and a policies/authorisation layer; extract business rules from controllers | L10       | 1 week   |
+| **F13** | Add soft deletes to `products` and `users`                                                            | L13       | 0.5 day  |
+| **F14** | Move demonstration credentials out of version control to a local-only seed command                    | L9        | 0.5 day  |
+| **F15** | Add batch/serial-number tracking and multi-warehouse transfers                                        | T1        | 1 sprint |
 
 ### 11.3 Closing statement
 
@@ -845,20 +847,20 @@ The principal lesson of the project is not the framework or the schema — both 
 
 ### A.1 Application layer (`app/`)
 
-| File | Responsibility |
-|---|---|
-| `Http/Controllers/Auth/AuthController.php` | Login, logout, deactivation check, session regeneration |
-| `Http/Controllers/DashboardController.php` | KPIs, 7-day chart series, recent transactions, low-stock panel |
-| `Http/Controllers/ProductController.php` | Full CRUD, search/filter/pagination, image lifecycle |
-| `Http/Controllers/CategoryController.php` | CRUD, `withCount` products, deletion guard |
-| `Http/Controllers/SupplierController.php` | CRUD, `withCount` products, deletion guard |
-| `Http/Controllers/InventoryController.php` | Stock-in, stock-out, adjustment — the three locked write paths |
-| `Http/Controllers/TransactionController.php` | Paginated, multi-filter transaction history |
-| `Http/Controllers/ReportController.php` | Inventory valuation, stock movement, low stock |
-| `Http/Controllers/UserController.php` | Admin-only user management |
-| `Http/Middleware/HandleInertiaRequests.php` | Root view, shared auth/flash props |
-| `Http/Middleware/AdminMiddleware.php` | RBAC gate; JSON 403 or redirect |
-| `Models/{User,Category,Supplier,Product,InventoryTransaction,StockAdjustment}.php` | 6 domain models |
+| File                                                                               | Responsibility                                                 |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `Http/Controllers/Auth/AuthController.php`                                         | Login, logout, deactivation check, session regeneration        |
+| `Http/Controllers/DashboardController.php`                                         | KPIs, 7-day chart series, recent transactions, low-stock panel |
+| `Http/Controllers/ProductController.php`                                           | Full CRUD, search/filter/pagination, image lifecycle           |
+| `Http/Controllers/CategoryController.php`                                          | CRUD, `withCount` products, deletion guard                     |
+| `Http/Controllers/SupplierController.php`                                          | CRUD, `withCount` products, deletion guard                     |
+| `Http/Controllers/InventoryController.php`                                         | Stock-in, stock-out, adjustment — the three locked write paths |
+| `Http/Controllers/TransactionController.php`                                       | Paginated, multi-filter transaction history                    |
+| `Http/Controllers/ReportController.php`                                            | Inventory valuation, stock movement, low stock                 |
+| `Http/Controllers/UserController.php`                                              | Admin-only user management                                     |
+| `Http/Middleware/HandleInertiaRequests.php`                                        | Root view, shared auth/flash props                             |
+| `Http/Middleware/AdminMiddleware.php`                                              | RBAC gate; JSON 403 or redirect                                |
+| `Models/{User,Category,Supplier,Product,InventoryTransaction,StockAdjustment}.php` | 6 domain models                                                |
 
 ### A.2 Presentation layer (`resources/js/pages`)
 
@@ -868,7 +870,7 @@ Layouts: `AppLayout` (262 lines, responsive sidebar, nav, toasts) · `AuthLayout
 
 ### A.3 Data layer (`database/`)
 
-Migrations: users · cache · jobs · *add role and status to users* · categories · suppliers · products · inventory_transactions · stock_adjustments.
+Migrations: users · cache · jobs · _add role and status to users_ · categories · suppliers · products · inventory_transactions · stock_adjustments.
 Seeder: `DatabaseSeeder` (407 lines, idempotent, branch-covering fixture set).
 
 ### A.4 Excluded from authorship
@@ -925,10 +927,10 @@ npm run build         # production bundle
 
 ### B.2 Demonstration accounts
 
-| Role | Email | Password |
-|---|---|---|
+| Role          | Email                 | Password   |
+| ------------- | --------------------- | ---------- |
 | Administrator | `admin@inventory.com` | `admin123` |
-| Staff | `staff@inventory.com` | `staff123` |
+| Staff         | `staff@inventory.com` | `staff123` |
 
 Both accounts, seeded by `DatabaseSeeder`. Staff access to `/inventory/adjustment` and `/users` demonstrates the RBAC boundary in §6.5.1 (L9 applies if these reach a shared environment).
 
@@ -938,16 +940,16 @@ Both accounts, seeded by `DatabaseSeeder`. Staff access to `/inventory/adjustmen
 
 Verify each against your institution's required edition and referencing style before submission.
 
-1. Bernstein, P. A., Hadzilacos, V., & Goodman, N. (1993). *Concurrency Control and Recovery in Database Systems*. Addison-Wesley.
-2. Fielding, R. T. (2000). *Architectural Styles and the Design of Network-based Software Architectures* (Doctoral dissertation, University of California, Irvine).
-3. Fowler, M. (2002). *Patterns of Enterprise Application Architecture*. Addison-Wesley.
-4. Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly*, 28(1), 75–105.
-5. Kleppmann, M. (2017). *Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems*. O'Reilly.
-6. NIST (2017). *Digital Identity Guidelines: Authentication and Lifecycle Management* (SP 800-63B). National Institute of Standards and Technology.
-7. OWASP Foundation (2021). *OWASP Top 10: The Ten Most Critical Web Application Security Risks*.
-8. Peffers, D., Rothenberger, M., & Tudor, S. (2007). A design science research methodology for information systems development. *Journal of Management Information Systems*, 24(3), 45–77.
-9. Sandhu, R. S., Coyne, E. J., Feinstein, H. L., & Kaufman, G. E. (1996). Role-based access control models. *IEEE Computer*, 29(2), 38–47.
+1. Bernstein, P. A., Hadzilacos, V., & Goodman, N. (1993). _Concurrency Control and Recovery in Database Systems_. Addison-Wesley.
+2. Fielding, R. T. (2000). _Architectural Styles and the Design of Network-based Software Architectures_ (Doctoral dissertation, University of California, Irvine).
+3. Fowler, M. (2002). _Patterns of Enterprise Application Architecture_. Addison-Wesley.
+4. Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. _MIS Quarterly_, 28(1), 75–105.
+5. Kleppmann, M. (2017). _Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems_. O'Reilly.
+6. NIST (2017). _Digital Identity Guidelines: Authentication and Lifecycle Management_ (SP 800-63B). National Institute of Standards and Technology.
+7. OWASP Foundation (2021). _OWASP Top 10: The Ten Most Critical Web Application Security Risks_.
+8. Peffers, D., Rothenberger, M., & Tudor, S. (2007). A design science research methodology for information systems development. _Journal of Management Information Systems_, 24(3), 45–77.
+9. Sandhu, R. S., Coyne, E. J., Feinstein, H. L., & Kaufman, G. E. (1996). Role-based access control models. _IEEE Computer_, 29(2), 38–47.
 
 ---
 
-*Report prepared from repository state at commit `137ccbc`. All measured results in Chapter 7 were produced by executing the commands in Appendix B on 1 October 2026.*
+_Report prepared from repository state at commit `137ccbc`. All measured results in Chapter 7 were produced by executing the commands in Appendix B on 1 October 2026._
